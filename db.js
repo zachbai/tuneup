@@ -1,13 +1,6 @@
-var Redis = require("ioredis");
+const Redis = require("ioredis");
 
-const USER_ID_KEY = "users:id";
-const USER_KEY = "users";
-const USER_RECENTS_KEY = "recents";
-const USER_FOLLOWING_KEY = "following";
-const USER_FOLLOWERS_KEY = "followers";
-
-const USERNAME_KEY = "username";
-const CURRENT_TRACK_KEY = "current_track";
+const schema = require("./db_schema.js");
 
 var state = {
 	db: null,
@@ -28,31 +21,33 @@ exports.addUser = function(user) { // add user to db
 	}
 	
 	// add user to all user set
-	getNewUserId().then((newUserId) => {
-		console.log("newuser:", newUserId);
-		state.db.sadd(USER_KEY, newUserId); 
+	return new Promise((resolve, reject) => {
+		resolve(user.spotifyId);
+	}).then((newUserId) => {
+		state.db.sadd(schema.userSetKey(), newUserId); 
 
 		// set user's profile
-		state.db.hmset(userKey(newUserId), [USERNAME_KEY, user.username,
-		CURRENT_TRACK_KEY, user.currentTrackId])
+		state.db.hmset(schema.userProfileKey(newUserId), [schema.usernameKey(), user.username,
+			schema.currentTrackKey(), user.currentTrackId, schema.spotifyAccessKey(),
+			user.spotifyAccessToken, schema.spotifyRefreshKey(), user.spotifyRefreshToken,
+			schema.spotifyIdKey(), user.spotifyId, schema.userImageKey(), user.imageUrl]);
 
 		// set user's list of followers
 		user.followers.forEach(function(followerId) {
-			state.db.sadd(userFollowersKey(newUserId), followerId);
+			state.db.sadd(schema.userFollowersKey(newUserId), followerId);
 		})
 
 		// set user's list of following
 		user.following.forEach(function(followingId) {
-			state.db.sadd(userFollowingKey(newUserId), followingId);
+			state.db.sadd(schema.userFollowingKey(newUserId), followingId);
 		})
 
 		// set user's recent tracks
-		user.recents.forEach(function(trackId) {
-			state.db.lpush(userRecentsKey(newUserId), trackId);
+		user.recents.forEach(function(object) {
+			state.db.lpush(schema.userRecentsKey(newUserId), object.track.id);
 		})
+		return;
 	})
-
-	return;
 }
 
 exports.addFollowerForUser = function(userId, followerId) {
@@ -61,7 +56,7 @@ exports.addFollowerForUser = function(userId, followerId) {
 		return null;
 	}
 
-	state.db.sadd(userFollowersKey(userId), followerId);
+	state.db.sadd(schema.userFollowersKey(userId), followerId);
 	return;
 }
 
@@ -71,7 +66,7 @@ exports.addFollowingForUser = function(userId, followingId) {
 		return null;
 	}
 
-	state.db.sadd(userFollowingKey(userId), followingId);
+	state.db.sadd(schema.userFollowingKey(userId), followingId);
 	return;
 }
 
@@ -81,15 +76,16 @@ exports.updateCurrentForUser = function(userId, trackId) {
 		return null;
 	}
 
-	state.db.hset(userKey(userId), [CURRENT_TRACK_KEY, trackId]);
+	state.db.hset(schema.userProfileKey(userId), [schema.currentTrackKey(), trackId]);
 	return;
 }
 
 exports.getFollowersForUser = function(userId) {
+	console.log(schema.userFollowersKey(userId));
 	return new Promise((resolve, reject) => {
-		state.db.smembers(userFollowersKey(userId), (err, result) => {
+		state.db.smembers(schema.userFollowersKey(userId), (err, result) => {
 			if (err || !result) {
-				reject();
+				reject(err);
 			}
 
 			resolve(result);
@@ -98,10 +94,11 @@ exports.getFollowersForUser = function(userId) {
 }
 
 exports.getFollowingForUser = function(userId) {
+	console.log(schema.userFollowingKey(userId));
 	return new Promise((resolve, reject) => {
-		state.db.smembers(userFollowingKey(userId), (err, result) => {
+		state.db.smembers(schema.userFollowingKey(userId), (err, result) => {
 			if (err || !result) {
-				reject();
+				reject(err);
 			}
 
 			resolve(result);
@@ -111,9 +108,9 @@ exports.getFollowingForUser = function(userId) {
 
 exports.getCurrentTrackForUser = function(userId) {
 	return new Promise((resolve, reject) => {
-		state.db.hget(userKey(userId), CURRENT_TRACK_KEY, (err, result) => {
+		state.db.hget(schema.userProfileKey(userId), schema.currentTrackKey(), (err, result) => {
 			if (err || !result) {
-				reject();
+				reject(err);
 			}
 
 			resolve(result);
@@ -123,9 +120,9 @@ exports.getCurrentTrackForUser = function(userId) {
 
 exports.getRecentsForUser = function(userId) {
 	return new Promise((resolve, reject) => {
-		state.db.lrange(userRecentsKey(userId), 0, -1, (err, result) => {
+		state.db.lrange(schema.userRecentsKey(userId), 0, -1, (err, result) => {
 			if (err || !result) {
-				reject();
+				reject(err);
 			}
 			resolve(result);
 		});
@@ -134,9 +131,10 @@ exports.getRecentsForUser = function(userId) {
 
 exports.getProfileForUser = function(userId) {
 	return new Promise((resolve, reject) => {
-		state.db.hmget(userKey(userId), USERNAME_KEY, CURRENT_TRACK_KEY, (err, result) => {
+		state.db.hmget(schema.userProfileKey(userId), schema.usernameKey(), schema.currentTrackKey(), (err, result) => {
 			if (err || !result) {
-				reject();
+				console.err("Could not retrieve user profile.");
+				reject(err);
 			}
 			userProfile = {
 				username: result[0],
@@ -148,29 +146,54 @@ exports.getProfileForUser = function(userId) {
 	});
 }
 
-function userKey(id) {
-	return USER_KEY + ":" + id;
+exports.setSpotifyAccessTokenForUser = function(userId, newAccessToken) {
+	state.db.hset(schema.userProfileKey(userId), schema.spotifyAccessKey(), newAccessToken);	
+	return;
 }
 
-function userFollowingKey(id) {
-	return userKey(id) + ":" + USER_FOLLOWING_KEY;
+exports.getSpotifyAccessTokenForUser = function(userId) {
+	return new Promise((resolve, reject) => {
+		state.db.hget(schema.userProfileKey(userId), schema.spotifyAccessKey(), (err, result) => {
+			if (err || !result) {
+				reject(err);
+			}
+
+			resolve(result);
+		});	
+	});
 }
 
-function userFollowersKey(id) {
-	return userKey(id) + ":" + USER_FOLLOWERS_KEY;
+exports.getSpotifyRefreshTokenForUser = function(userId) {
+	return new Promise((resolve, reject) => {
+		state.db.hget(schema.userProfileKey(userId), schema.spotifyRefreshKey(), (err, result) => {
+			if (err || !result) {
+				reject(err);
+			}
+
+			resolve(result);
+		});	
+	});
 }
 
-function userRecentsKey(id) {
-	return userKey(id) + ":" + USER_RECENTS_KEY;
+exports.getFacebookIdForUser = function(userId) {
+	return new Promise((resolve, reject) => {
+		state.db.hget(schema.userProfileKey(userId), schema.facebookIdKey(), (err, result) => {
+			if (err || !result) {
+				reject(err);
+			}
+
+			resolve(result);
+		});	
+	});
 }
 
 function getNewUserId() {
-	if (!state.db.get(USER_ID_KEY)) {
-		state.db.set(USER_ID_KEY, -1, handleSetError);
+	if (!state.db.get(schema.userIdKey())) {
+		state.db.set(schema.userIdKey(), -1, handleSetError);
 	}
-	state.db.incr(USER_ID_KEY);
+	state.db.incr(schema.userIdKey());
 	const newUserId = null;
-	return state.db.get(USER_ID_KEY);
+	return state.db.get(schema.userIdKey());
 }
 
 function handleGetError(err, res) {

@@ -1,5 +1,28 @@
+@import url('https://fonts.googleapis.com/css?family=Work+Sans:400,500,700,800,900');
+
 body {
-	background: #ACCEEC;
-	color: #005CC5;
+	color: #181818;
 	text-align: center;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
+
+.header-text {
+	font-family: 'Work Sans', sans-serif;
+
+	&.title{
+		font-weight: bold;
+		font-size: 72;
+	}
+
+	&.sub{ 
+		font-weight: medium;
+		font-size: 48;
+		padding-bottom: 50px;
+	}
+}
+
+
+
+

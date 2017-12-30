@@ -1,8 +1,21 @@
 import React, { Component } from 'react';
+import classNames from 'classnames';
+
+import FBLogin from './FBLogin.jsx';
 
 class App extends Component {
+	handleResponse(response) {
+		console.log(response);
+	}
+
 	render() {
-		return <h1>Hello, World! from Tuneup</h1>
+		return (
+			<div>
+				<div className={classNames('header-text', 'title')}>tuneup</div>
+				<div className={classNames('header-text', 'sub')}>created by zb</div>
+				<FBLogin/>
+			</div>
+		)
 	}
 }
 

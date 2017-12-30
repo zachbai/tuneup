@@ -1,4 +1,5 @@
 // imports ------------------------------------->
+const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser'); 
 const express = require('express'); 
 const fetch = require('node-fetch');
@@ -9,6 +10,8 @@ const querystring = require('querystring');
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 
+const db = require('./db.js');
+const spotify = require('./server_modules/spotify.js');
 const webpackConfig = require('./webpack.config.js');
 const utils = require('./server_modules/utils.js');
 // end imports --------------------------------->
@@ -20,26 +23,46 @@ const REDIRECT_URI = 'http://lvh.me:3000/callback-spotify';
 
 const app = express();
 const stateKey = 'spotify_auth_state';
+const userIdKey = 'facebook_user_id';
 const compiler = webpack(webpackConfig);
+db.connect();
 
 // middleware
 app.use(cookieParser());
 app.use(morgan('tiny'));
 app.use(express.static('/dist'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(webpackDevMiddleware(compiler, {
 	publicPath: webpackConfig.output.publicPath
 }));
 
 app.get('/', (req, res) => {
+	res.send('logged in');
+})
+
+app.get('/login', (req, res) => {
 	res.sendFile(path.resolve('index.html'));
+});
+
+app.post('/login', (req, res) => {
+	let userId = req.body.userId;
+	res.cookie(userIdKey, userId);
+
+	let response = {
+		success: true, 
+	};
+	res.send(JSON.stringify(response));
 });
 
 app.get('/login-spotify', (req, res) => {
 	let state = utils.generateRandomString(16);	
 	res.cookie(stateKey, state);
 
-	let scope = 'playlist-modify-public playlist-modify-private streaming user-follow-modify ' +
-		'user-read-email user-top-read user-modify-playback-state user-read-recently-played';
+	let scope = 'user-read-private playlist-read-private playlist-modify-private ' +
+		'playlist-modify-public playlist-read-collaborative user-top-read ' +
+		'user-read-recently-played user-library-read user-library-modify ' +
+		'user-read-currently-playing user-modify-playback-state user-read-playback-state streaming';
 
 	res.redirect('https://accounts.spotify.com/authorize?' +
 		querystring.stringify({
@@ -56,37 +79,17 @@ app.get('/callback-spotify', (req, res) => {
 	let code = req.query.code || null;	
 	let state = req.query.state || null;
 	let storedState = req.cookies ? req.cookies[stateKey] : null;
+	let storedUserId = req.cookies ? req.cookies[userIdKey] : null;
 
 	if (!state || state != storedState) {
-		console.error('state', state);
-		console.error('storedState', storedState);
 		res.redirect('/auth_error');
 	} else {
 		res.clearCookie(stateKey);
-		let authString = 'Basic ' + new Buffer(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64');
-		let authOptions = {
-			method: 'POST',
-			headers: {
-				'Content-Type':'application/x-www-form-urlencoded',
-				'Authorization': authString
-			},
-			body: querystring.stringify({
-				grant_type: 'authorization_code',
-				code: code,
-				redirect_uri: REDIRECT_URI
-			}),
-		};
-
 		console.log("Obtaining access token...");
-		fetch('https://accounts.spotify.com/api/token', authOptions)
-			.then((response) => {
-				console.log(response.status);
-				return response.text();
-			}).then((body) => {
-				console.log(body);
-				return;
-			});
-
+		spotify.addUser(code, REDIRECT_URI, CLIENT_ID, CLIENT_SECRET).then(tokens => {
+			console.log("done");
+			// lets do something with these tokens eh
+		});
 		res.redirect('/success');
 	}
 });
