@@ -3,8 +3,8 @@ const querystring = require('querystring');
 
 const db = require('../db.js');
 
-async function addUser(code, redirect_uri, client_id, client_secret) {
-	let tokens = await getSpotifyAuthTokens(code, redirect_uri, client_id, client_secret);	
+async function addUser(code, redirectUri, clientId, clientSecret, fbId) {
+	let tokens = await getSpotifyAuthTokens(code, redirectUri, clientId, clientSecret);	
 	let currentTrack = await getCurrentPlaying(tokens.accessToken);
 	let userProfile = await getUserProfile(tokens.accessToken);
 	let recents = await getTenRecentTracks(tokens.accessToken);
@@ -14,30 +14,30 @@ async function addUser(code, redirect_uri, client_id, client_secret) {
 		spotifyAccessToken: tokens.accessToken,
 		spotifyRefreshToken: tokens.refreshToken,
 		spotifyId: userProfile.spotifyId,
+		fbId: fbId,
 		imageUrl: userProfile.imageUrl,
-		currentTrackId: currentTrack.id,
+		currentTrackId: currentTrack ? currentTrack.id : null,
 		followers: [],
 		following: [],
 		recents: recents,
 	};
 
 	return db.addUser(newUser).then(x => {
-		console.log("Spotify ID:",userProfile.spotifyId);
-		console.log("done!");
+		return userProfile.spotifyId;
 	})
 	.catch(err => console.log(err));
 }
 
-async function getSpotifyAuthTokens(code, redirect_uri, client_id, client_secret) {
+async function getSpotifyAuthTokens(code, redirectUri, clientId, clientSecret) {
 	let authOptions = {
 		url: 'https://accounts.spotify.com/api/token',
 		form: {
 			code: code,
-			redirect_uri: redirect_uri,
+			redirect_uri: redirectUri,
 			grant_type: 'authorization_code'
 		},
 		headers: {
-			'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
+			'Authorization': 'Basic ' + (new Buffer(clientId + ':' + clientSecret).toString('base64'))
 		},
 		json: true
 	};	
@@ -62,7 +62,12 @@ async function getCurrentPlaying(access_token) {
 	};
 
 	let track = await request.get(options)
-		.then(response => response.item)
+		.then(response => {
+			if (response)
+				return response.item;
+			else 
+				return null;
+		})
 		.catch(err => console.log(err));
 
 	return track;
@@ -83,7 +88,7 @@ async function getUserProfile(access_token) {
 				username: response.display_name,
 				imageUrl: response.images.length > 0 ? response.images[0].url : null,
 				spotifyId: response.id
-			}
+			};
 		})
 		.catch(err => console.log(err));
 	return profile;

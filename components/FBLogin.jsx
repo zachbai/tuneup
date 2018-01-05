@@ -31,6 +31,7 @@ class FBLogin extends Component {
 	}	
 
 	updateLoggedInState(response) {
+		// redirect to server login for spotify auth
 		window.location.assign('/login-spotify?' + querystring.stringify({
 			fbId: response.userID
 		}));
