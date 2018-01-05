@@ -2,6 +2,13 @@ import React, { Component } from 'react';
 import querystring from 'querystring';
 
 class FBLogin extends Component {
+	constructor() {
+		super();
+
+		this.state = {
+			loggedIn: false
+		};
+	}
 	componentDidMount() {
 		window.fbAsyncInit = function() {
 			FB.init({
@@ -14,8 +21,6 @@ class FBLogin extends Component {
 				console.log(JSON.stringify(response));
 				if (response.authResponse) {
 					this.updateLoggedInState(response.authResponse);
-				} else {
-					this.updateLoggedOutState();
 				}
 			});
 		}.bind(this);
@@ -31,17 +36,15 @@ class FBLogin extends Component {
 	}	
 
 	updateLoggedInState(response) {
-		// redirect to server login for spotify auth
-		window.location.assign('/login-spotify?' + querystring.stringify({
-			fbId: response.userID
-		}));
-	}
-
-	updateLoggedOutState() {
-		console.log("Logged out via Facebook");
+		this.setState({
+			loggedIn: true
+		});
+		this.props.loggedIn();
 	}
 
 	render() {
+		if (this.state.loggedIn) 
+			return "Logged in thru facebook";
 		return (
 			<div className="fb-login-button" 
 				data-max-rows="1" 
