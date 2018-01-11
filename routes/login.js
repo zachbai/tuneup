@@ -9,17 +9,12 @@ const utils = require(path.resolve('server_modules/utils.js'));
 
 // cookies keys
 const stateKey = 'spotify_auth_state';
-const spotifyUserKey = 'spotify_user_id';
-const fbUserKey = 'fb_user_id'
+const spotifyUserKey = 'tuneup_spotify_user_id';
+const fbUserKey = 'tuneup_fb_user_id';
 
 router.get('/spotify', (req, res) => {
-	let state = utils.generateRandomString(16);	
+	const state = utils.generateRandomString(16);	
 	res.cookie(stateKey, state);
-
-	let scope = 'user-read-private playlist-read-private playlist-modify-private ' +
-		'playlist-modify-public playlist-read-collaborative user-top-read ' +
-		'user-read-recently-played user-library-read user-library-modify ' +
-		'user-read-currently-playing user-modify-playback-state user-read-playback-state streaming';
 
 	res.redirect('https://accounts.spotify.com/authorize?' +
 		querystring.stringify({
@@ -27,19 +22,18 @@ router.get('/spotify', (req, res) => {
 			response_type: 'code',
 			redirect_uri: config.spotifyRedirectUri,
 			state: state,
-			scope: scope, 
+			scope: config.spotifyScope, 
 			show_dialog: true // for testing purposes
 		}));
 });
 
 router.get('/spotify-callback', async (req, res) => {
-	let code = req.query.code || null;	
-	let state = req.query.state || null;
-	let storedState = req.cookies ? req.cookies[stateKey] : null;
-	let storedFbId = req.cookies ? req.cookies[fbUserKey] : null;
+	const code = req.query.code || null;	
+	const state = req.query.state || null;
+	const storedState = req.cookies ? req.cookies[stateKey] : null;
+	const storedFbId = req.cookies ? req.cookies[fbUserKey] : null;
 
-	if (!state || state != storedState || !storedFbId) {
-		console.log('state:', state);
+	if (!state || state != storedState) {
 		res.redirect('/auth_error');
 	} else {
 		res.clearCookie(stateKey);

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import classNames from 'classnames';
+import querystring from 'querystring';
 
 class SpotifyLogin extends Component {
     _triggerLogIn() {
@@ -9,10 +10,8 @@ class SpotifyLogin extends Component {
             'width=400,height=500'
         );
         window.addEventListener('storage', (data) => {
-            console.log(data);
-            if (data.key == "tuneup_token" && data.newValue == "success") {
+            if (data.key == "tuneup_authorized" && data.newValue == "true")
                 this.props.loggedIn();
-            }
         });
     }
 

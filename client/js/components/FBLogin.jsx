@@ -1,6 +1,9 @@
 import React, { Component } from 'react'; 
 import querystring from 'querystring';
 
+import constants from '../core/constants.js';
+import shared from '../core/shared.js';
+
 class FBLogin extends Component {
 	constructor() {
 		super();
@@ -18,7 +21,6 @@ class FBLogin extends Component {
 				version    : 'v2.11'
 			});
 			window.FB.Event.subscribe('auth.statusChange', (response) => {
-				console.log(JSON.stringify(response));
 				if (response.authResponse) {
 					this.updateLoggedInState(response.authResponse);
 				}
@@ -35,7 +37,8 @@ class FBLogin extends Component {
 		}(document, 'script', 'facebook-jssdk'));
 	}	
 
-	updateLoggedInState(response) {
+	updateLoggedInState(authResponse) {
+		shared.cookies.set(constants.FACEBOOK_COOKIES_KEY, authResponse.userID);
 		this.setState({
 			loggedIn: true
 		});

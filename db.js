@@ -109,7 +109,7 @@ exports.getFollowingForUser = function(userId) {
 exports.getCurrentTrackForUser = function(userId) {
 	return new Promise((resolve, reject) => {
 		state.db.hget(schema.userProfileKey(userId), schema.currentTrackKey(), (err, result) => {
-			if (err || !result) {
+			if (err) {
 				reject(err);
 			}
 
@@ -133,7 +133,7 @@ exports.getProfileForUser = function(userId) {
 	return new Promise((resolve, reject) => {
 		state.db.hmget(schema.userProfileKey(userId), schema.usernameKey(), schema.currentTrackKey(), (err, result) => {
 			if (err || !result) {
-				console.err("Could not retrieve user profile.");
+				console.error("Could not retrieve user profile.");
 				reject(err);
 			}
 			userProfile = {
