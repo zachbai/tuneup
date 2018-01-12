@@ -10,7 +10,7 @@ const utils = require(path.resolve('server_modules/utils.js'));
 // cookies keys
 const stateKey = 'spotify_auth_state';
 const spotifyUserKey = 'tuneup_spotify_user_id';
-const fbUserKey = 'tuneup_fb_user_id';
+const facebookUserKey = 'tuneup_fb_user_id';
 
 router.get('/spotify', (req, res) => {
 	const state = utils.generateRandomString(16);	
@@ -31,7 +31,7 @@ router.get('/spotify-callback', async (req, res) => {
 	const code = req.query.code || null;	
 	const state = req.query.state || null;
 	const storedState = req.cookies ? req.cookies[stateKey] : null;
-	const storedFbId = req.cookies ? req.cookies[fbUserKey] : null;
+	const storedFacebookId = req.cookies ? req.cookies[facebookUserKey] : null;
 
 	if (!state || state != storedState) {
 		res.redirect('/auth_error');
@@ -42,7 +42,7 @@ router.get('/spotify-callback', async (req, res) => {
             config.spotifyRedirectUri, 
             config.spotifyClientId, 
             config.spotifyClientSecret, 
-            storedFbId);
+            storedFacebookId);
 
 		res.cookie(spotifyUserKey, spotifyId);
 		res.sendFile(path.resolve('login_success.html'));

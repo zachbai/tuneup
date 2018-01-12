@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const config = require(path.resolve('./config.js'));
 const db = require(path.resolve('./db.js'));
+const spotify = require(path.resolve('./server_modules/spotify.js'));
 
 const router = express.Router();
 
@@ -16,24 +17,26 @@ router.post('/auth', (req, res) => {
 		});
 	}
 
-	db.getProfileForUser(spotifyId).then((profile) => {
-		const payload = {
-			spotifyId: spotifyId
-		};
+	db.hasUser(spotifyId).then((result) => {
+		if (result) {
+			const payload = {
+				spotifyId: spotifyId
+			};
 
-		const token = jwt.sign(payload, config.appSecret, {
-			expiresIn: '1440m' // expires in 24 hours
-		});
-		res.json({
-			success: true,
-			tuneup_token: token
-		});
-	}).catch((err) => {
-		res.json({
-			success: false,
-			message: 'Could not find user'
-		});
-	});
+			const token = jwt.sign(payload, config.appSecret, {
+				expiresIn: '1440m' // expires in 24 hours
+			});
+			res.json({
+				success: true,
+				tuneup_token: token
+			});
+		} else {
+			res.json({
+				success: false,
+				message: 'User does not exist'
+			});
+		}
+	})
 });
 
 router.use(function(req, res, next) {
@@ -65,10 +68,10 @@ router.get('/me', (req, res) => {
 		});
 	}
 
-	db.getProfileForUser(spotifyId).then((profile) => {
+	db.getUser(spotifyId).then(user => {
 		res.json({
 			success: true,
-			payload: profile
+			payload: user 
 		});
 	}).catch((err) => {
 		console.log(err);
@@ -79,6 +82,7 @@ router.get('/me', (req, res) => {
 	});
 })
 
+// TODO: support query parameters for specific followers
 router.get('/followers', (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
@@ -102,6 +106,7 @@ router.get('/followers', (req, res) => {
 	});
 });
 
+// TODO: support query parameters for specific following
 router.get('/following', (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
@@ -125,7 +130,7 @@ router.get('/following', (req, res) => {
 	});
 });
 
-router.get('/recents', (req, res) => {
+router.get('/recents', async (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -134,21 +139,37 @@ router.get('/recents', (req, res) => {
 		});
 	}
 
-	db.getRecentsForUser(spotifyId).then((recents) => {
+	try {
+		const recents = await db.getRecentsForUser(spotifyId);
+		let result = [];
+		let accessToken = await db.getSpotifyAccessTokenForUser(spotifyId);
+
+		let tracks = await Promise.all(recents.map(trackId => {
+			return db.hasTrack(trackId).then(present => {
+				if (present)
+					return db.getTrack(trackId);
+				else 
+					return spotify.getTrackInfo(accessToken, trackId)
+						.then(track => {
+							return db.addTrack(track);
+						});
+			});
+		}));
+
 		res.json({
 			success: true,
-			payload: recents 
+			recents: tracks 
 		});
-	}).catch((err) => {
+	} catch(err) {
 		console.log(err);
 		res.json({
 			success: false,
 			message: 'Could not get user\'s recents'
 		});
-	});
+	}
 });
 
-router.get('/current', (req, res) => {
+router.get('/current', async (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -157,18 +178,27 @@ router.get('/current', (req, res) => {
 		});
 	}
 
-	db.getCurrentTrackForUser(spotifyId).then((current) => {
+	try {
+		const trackId = await db.getCurrentTrackForUser(spotifyId);
+		let track = await db.getTrack(trackId);
+		let accessToken = null;
+		if (!track) {
+			if (!accessToken)
+				accessToken = await db.getSpotifyAccessTokenForUser(spotifyId);
+			track = await spotify.getTrackInfo(accessToken, trackId);
+		}
+
 		res.json({
 			success: true,
-			payload: current 
+			currentTrack: track,
 		});
-	}).catch((err) => {
+	} catch(err) {
 		console.log(err);
 		res.json({
 			success: false,
 			message: 'Could not get user\'s current track'
 		});
-	});
+	};
 });
 
 module.exports = router;
