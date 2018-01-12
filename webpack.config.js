@@ -2,11 +2,11 @@ const webpack = require('webpack');
 const path = require('path');
 
 const BUILD_DIR = path.resolve(__dirname, './client/dist');
-const APP_DIR = path.resolve(__dirname, './client/js');
+const APP_DIR = path.resolve(__dirname, './client/');
 
 const config = {
 	entry: {
-		main: APP_DIR + '/app.js'
+		main: APP_DIR + '/root.js'
 	},
 	devtool: 'inline-source-map',
 	output: {

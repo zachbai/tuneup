@@ -5,13 +5,6 @@ import constants from '../core/constants.js';
 import shared from '../core/shared.js';
 
 class FBLogin extends Component {
-	constructor() {
-		super();
-
-		this.state = {
-			loggedIn: false
-		};
-	}
 	componentDidMount() {
 		window.fbAsyncInit = function() {
 			FB.init({
@@ -37,16 +30,8 @@ class FBLogin extends Component {
 		}(document, 'script', 'facebook-jssdk'));
 	}	
 
-	updateLoggedInState(authResponse) {
-		shared.cookies.set(constants.FACEBOOK_COOKIES_KEY, authResponse.userID);
-		this.setState({
-			loggedIn: true
-		});
-		this.props.loggedIn();
-	}
-
 	render() {
-		if (this.state.loggedIn) 
+		if (this.props.loggedInFacebook) 
 			return "Logged in thru facebook";
 		return (
 			<div className="fb-login-button" 

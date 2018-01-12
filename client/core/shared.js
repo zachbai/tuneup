@@ -9,5 +9,12 @@ module.exports = {
             return token;
         else 
             return null;
+    },
+    getSpotifyId: () => {
+        const spotifyId = localStorage.getItem(constants.SPOTIFY_LOCAL_STORAGE_KEY);
+        if (spotifyId)
+            return spotifyId;
+        else 
+            return null;
     }
 };
