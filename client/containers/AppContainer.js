@@ -1,11 +1,11 @@
 import { connect } from 'react-redux';
-import AppView from '../views/AppView';
+import AppView from '../components/AppView';
 
 import AuthActions from '../actions/AuthActions';
 
 const mapStateToProps = (state, ownProps) => {
     return {
-        loggedIn: state.authState.loggedInFacebook && state.authState.loggedInSpotify
+        loggedIn: state.authState.userRegistered
     };
 };
 

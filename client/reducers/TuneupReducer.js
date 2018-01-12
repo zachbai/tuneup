@@ -23,7 +23,8 @@ const initialState = {
     },
     authState: {
         loggedInFacebook: false,
-        loggedInSpotify: false
+        loggedInSpotify: false,
+        userRegistered: true,
     }
 };
 
