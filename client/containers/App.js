@@ -13,9 +13,9 @@ const mapDispatchToProps = (state, ownProps) => {
     return {};
 }
 
-const AppContainer = connect(
+const App = connect(
     mapStateToProps,
     mapDispatchToProps
 )(AppView);
 
-export default AppContainer;
+export default App;

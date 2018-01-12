@@ -6,7 +6,7 @@ import { Provider } from 'react-redux';
 import { createLogger } from 'redux-logger';
 
 import TuneupReducer from './reducers/TuneupReducer';
-import AppContainer from './containers/AppContainer.js';
+import App from './containers/App.js';
 import styles from './scss/main.scss';
 
 const loggerMiddleware = createLogger();
@@ -18,7 +18,7 @@ const store = createStore(
 
 render(
     <Provider store={store}>
-        <AppContainer />
+        <App/>
     </Provider>,
     document.getElementById('root')
 );

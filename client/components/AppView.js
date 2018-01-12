@@ -3,15 +3,18 @@ import classNames from 'classnames';
 import auth from '../core/auth.js';
 import constants from '../core/constants.js';
 
-import LoginContainer from '../containers/LoginContainer';
+import Landing from '../containers/Landing';
+import HeaderView from './HeaderView';
+import FeedView from './FeedView';
 
 const App = (props) => {
 	if (!props.loggedIn)
-		return <LoginContainer/>
+		return <Landing/>
 
 	return ( //app
-		<div>
-			application
+		<div className={classNames('app-container')}>
+			<HeaderView />
+			<FeedView />
 		</div>
 	);
 }

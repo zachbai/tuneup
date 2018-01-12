@@ -4,7 +4,7 @@ import querystring from 'querystring';
 import constants from '../core/constants.js';
 import shared from '../core/shared.js';
 
-class FBLogin extends Component {
+class FacebookLoginButton extends Component {
 	componentDidMount() {
 		window.fbAsyncInit = function() {
 			FB.init({
@@ -15,7 +15,8 @@ class FBLogin extends Component {
 			});
 			window.FB.Event.subscribe('auth.statusChange', (response) => {
 				if (response.authResponse) {
-					this.updateLoggedInState(response.authResponse);
+					console.log('props:', this.props);
+					this.props.onLogIn(response.authResponse.userID);
 				}
 			});
 		}.bind(this);
@@ -31,8 +32,6 @@ class FBLogin extends Component {
 	}	
 
 	render() {
-		if (this.props.loggedInFacebook) 
-			return "Logged in thru facebook";
 		return (
 			<div className="fb-login-button" 
 				data-max-rows="1" 
@@ -46,4 +45,4 @@ class FBLogin extends Component {
 	}
 }
 
-module.exports = FBLogin;
+module.exports = FacebookLoginButton;

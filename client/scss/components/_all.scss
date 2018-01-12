@@ -1,0 +1,17 @@
+@import 'app';
+@import 'header';
+@import 'cell';
+@import 'feed';
+
+#root {
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+* {
+    -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}

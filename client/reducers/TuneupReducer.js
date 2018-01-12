@@ -8,6 +8,8 @@ import UserReducer from './UserReducer';
 const initialState = {
     userState: {
         spotifyId: '',
+        userName: '',
+        userImage: '',
         currentTrack: {
             trackId: '',
             name: '',

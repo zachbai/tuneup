@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import classNames from 'classnames';
 import querystring from 'querystring';
 
-function SpotifyLogin(props) {
+function SpotifyLoginButton(props) {
     return (
         <div 
             className={classNames('button', 'spotify')}
@@ -13,4 +13,4 @@ function SpotifyLogin(props) {
     ) 
 }
 
-export default SpotifyLogin;
+export default SpotifyLoginButton;
