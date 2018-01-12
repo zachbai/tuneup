@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import AppView from '../views/AppView';
+import AppView from '../components/AppView';
 
 import AuthActions from '../actions/AuthActions';
 

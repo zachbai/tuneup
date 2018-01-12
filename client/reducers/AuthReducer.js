@@ -16,7 +16,7 @@ const AuthReducer = {
     },
     loggedInSpotify: (state = initialState, action) => {
         switch(action.type)  {
-            case TuneupActionTypes.LOGIN_FACEBOOK:
+            case TuneupActionTypes.LOGIN_SPOTIFY:
                 return Object.assign({}, state, {
                     loggedInSpotify: true
                 });
