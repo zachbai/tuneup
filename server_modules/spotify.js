@@ -23,10 +23,9 @@ async function addUser(code, redirectUri, clientId, clientSecret, facebookId) {
 		recents: recents,
 	};
 
-	return db.addUser(newUser).then(x => {
+	return db.addUser(newUser).then(() => {
 		return userProfile.spotifyId;
-	})
-	.catch(err => console.log(err));
+	}).catch(err => console.log(err));
 }
 
 async function getSpotifyAuthTokens(code, redirectUri, clientId, clientSecret) {
@@ -62,14 +61,12 @@ async function getCurrentPlaying(access_token) {
 		json: true
 	};
 
-	let track = await request.get(options)
-		.then(response => {
-			if (response)
-				return response.item;
-			else 
-				return null;
-		})
-		.catch(err => console.log(err));
+	let track = await request.get(options).then(response => {
+		if (response)
+			return response.item;
+		else 
+			return null;
+	}).catch(err => console.log(err));
 
 	return track;
 }
@@ -83,15 +80,13 @@ async function getUserProfile(access_token) {
 		json: true
 	};
 
-	let profile = await request.get(options) 
-		.then(response => {
-			return {
-				username: response.display_name,
-				imageUrl: response.images.length > 0 ? response.images[0].url : null,
-				spotifyId: response.id
-			};
-		})
-		.catch(err => console.log(err));
+	let profile = await request.get(options) .then(response => {
+		return {
+			username: response.display_name,
+			imageUrl: response.images.length > 0 ? response.images[0].url : null,
+			spotifyId: response.id
+		};
+	}).catch(err => console.log(err));
 	return profile;
 }
 
@@ -120,9 +115,7 @@ async function getTrackInfo(accessToken, trackId) {
 		json: true
 	};
 
-	let fullTrack = await request.get(options)
-		.then(response => response)
-
+	let fullTrack = await request.get(options);
 	return {
 		id: fullTrack.id,
 		title: fullTrack.name,
@@ -139,7 +132,7 @@ async function getTracksInfo(accessToken, trackIds) {
 	for (let i = 0; i < trackIds.length; i++)  {
 		querystring += i < trackIds.length - 1 
 			? trackIds[i] + ','
-			: trackids[i];
+			: trackIds[i];
 	}
 
 	let options = {
@@ -150,8 +143,7 @@ async function getTracksInfo(accessToken, trackIds) {
 		json: true
 	};
 
-	let fullTracks = await request.get(options)
-		.then(response => response)
+	let fullTracks = await request.get(options);
 
 	return fullTracks.map(fullTrack => {
 		return {

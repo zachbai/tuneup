@@ -36,10 +36,10 @@ router.post('/auth', (req, res) => {
 				message: 'User does not exist'
 			});
 		}
-	})
+	});
 });
 
-router.use(function(req, res, next) {
+router.use((req, res, next) => {
 	var token = req.body.token || req.query.token || req.headers['x-access-token'];
 	if (token) {
 		// verify token
@@ -53,8 +53,8 @@ router.use(function(req, res, next) {
 		});
 	} else {
 		return res.status(403).send({ 
-		  success: false, 
-		  message: 'No token provided.' 
+			success: false, 
+			message: 'No token provided.' 
 		});
 	}
 });
@@ -130,7 +130,7 @@ router.get('/following', (req, res) => {
 	});
 });
 
-router.get('/recents', async (req, res) => {
+router.get('/recents', async (req,res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -141,7 +141,6 @@ router.get('/recents', async (req, res) => {
 
 	try {
 		const recents = await db.getRecentsForUser(spotifyId);
-		let result = [];
 		let accessToken = await db.getSpotifyAccessTokenForUser(spotifyId);
 
 		let tracks = await Promise.all(recents.map(trackId => {
@@ -198,7 +197,7 @@ router.get('/current', async (req, res) => {
 			success: false,
 			message: 'Could not get user\'s current track'
 		});
-	};
+	}
 });
 
 module.exports = router;

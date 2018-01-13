@@ -38,11 +38,11 @@ router.get('/spotify-callback', async (req, res) => {
 	} else {
 		res.clearCookie(stateKey);
 
-        let spotifyId = await spotify.addUser(code, 
-            config.spotifyRedirectUri, 
-            config.spotifyClientId, 
-            config.spotifyClientSecret, 
-            storedFacebookId);
+		let spotifyId = await spotify.addUser(code, 
+			config.spotifyRedirectUri, 
+			config.spotifyClientId, 
+			config.spotifyClientSecret, 
+			storedFacebookId);
 
 		res.cookie(spotifyUserKey, spotifyId);
 		res.sendFile(path.resolve('login_success.html'));

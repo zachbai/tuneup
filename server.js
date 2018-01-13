@@ -2,8 +2,6 @@
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser'); 
 const express = require('express'); 
-const fetch = require('node-fetch');
-const FormData = require('form-data');
 const morgan = require('morgan');
 const path = require('path');
 const webpack = require('webpack');
@@ -11,9 +9,7 @@ const webpackDevMiddleware = require('webpack-dev-middleware');
 // end imports --------------------------------->
 
 const db = require('./db.js');
-const config = require('./config.js');
 const webpackConfig = require('./webpack.config.js');
-const utils = require('./server_modules/utils.js');
 
 // express routes
 const apiRoutes = require('./routes/api.js');
@@ -21,11 +17,6 @@ const loginRoutes = require('./routes/login.js');
 
 const app = express();
 const compiler = webpack(webpackConfig); db.connect();
-
-// cookies keys
-const stateKey = 'spotify_auth_state';
-const spotifyUserKey = 'spotify_user_id';
-const fbUserKey = 'fb_user_id'
 
 // middleware
 app.use(cookieParser());
