@@ -13,6 +13,12 @@
             "type": "npm",
             "script": "build-server",
             "problemMatcher": []
+        },
+        {
+            "label": "build-server-dev",
+            "type": "npm",
+            "script": "build-server-dev",
+            "problemMatcher": []
         }
     ]
 }

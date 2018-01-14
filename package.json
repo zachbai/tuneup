@@ -9,6 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build-client": "webpack",
     "build-server": "babel src -d dist",
+    "build-server-dev": "babel src -d dist --source-maps",
     "db": "cd db && redis-server",
     "start": "nodemon src/server.js --exec babel-node",
     "serve": "node dist/server.js"
