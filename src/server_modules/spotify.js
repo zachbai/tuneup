@@ -12,7 +12,7 @@ class Spotify {
 		]);
 		const userProfile = userInfo[0];
 		const currentTrack = userInfo[1];
-		const recentsTrackIds = userInfo[2].map((obj) => obj.track.id);
+		const recentsTrackIds = userInfo[2].map((track) => track.id);
 
 		let newUser = {
 			username: userProfile.username,
@@ -84,8 +84,18 @@ class Spotify {
 		};
 
 		let track = await request.get(options).then(response => {
-			if (response)
-				return response.item;
+			if (response) {
+				const fullTrack = response.item;
+				return {
+					id: fullTrack.id,
+					title: fullTrack.name,
+					artist: fullTrack.artists[0].name,
+					album: fullTrack.album.name,
+					albumArt: fullTrack.album.images[0].url,
+					duration: fullTrack.duration_ms,
+					url: fullTrack.external_urls.spotify
+				};
+			}
 			else 
 				return null;
 		}).catch(err => console.log(err));
@@ -103,7 +113,17 @@ class Spotify {
 		};
 		
 		let recents = await request.get(options)
-			.then(response => response.items)
+			.then(response => response.items.map(obj => {
+				return {
+					id: obj.track.id,
+					title: obj.track.name,
+					artist: obj.track.artists[0].name,
+					album: obj.track.album.name,
+					albumArt: obj.track.album.images[0].url,
+					duration: obj.track.duration_ms,
+					url: obj.track.external_urls.spotify
+				};
+			}))
 			.catch(err => console.log(err));
 		return recents;
 	}
@@ -130,4 +150,4 @@ class Spotify {
 	}
 }
 
-export default Spotify;
+export default new Spotify();

@@ -2,20 +2,16 @@ import db from '../db.js';
 import TrackSchema from './schema/TrackSchema.js';
 
 class Track  {
-	constructor() {
-		this.db = db.get();
-	}
-
 	addTrack(track) {
 		return Promise.all([this.addTrackToSet(track.id), this.setTrackInfo(track)]);
 	}
 
 	addTrackToSet(trackId) {
-		return this.db.sadd(TrackSchema.trackSetKey, trackId);
+		return db.get().sadd(TrackSchema.trackSetKey, trackId);
 	}
 
 	setTrackInfo(track) {
-		return this.db.hmset(TrackSchema.trackKey(track.id), [
+		return db.get().hmset(TrackSchema.trackKey(track.id), [
 			TrackSchema.titleKey, track.title,
 			TrackSchema.artistKey, track.artist,
 			TrackSchema.albumKey, track.album,
@@ -26,11 +22,11 @@ class Track  {
 	}
 
 	hasTrack(trackId) {
-		return this.db.sismember(TrackSchema.trackSetKey, trackId);
+		return db.get().sismember(TrackSchema.trackSetKey, trackId);
 	}
 
 	getTrack(trackId) {
-		return this.db.hmget(TrackSchema.trackKey(trackId), [
+		return db.get().hmget(TrackSchema.trackKey(trackId), [
 			TrackSchema.titleKey,
 			TrackSchema.artistKey,
 			TrackSchema.albumKey,
@@ -55,4 +51,4 @@ class Track  {
 	}
 }
 
-export default Track;
+export default new Track();

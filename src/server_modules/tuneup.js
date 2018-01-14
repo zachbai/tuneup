@@ -1,6 +1,7 @@
-import User from './db/User.js';
-import Track from './db/Track.js';
-import spotify from './spotify.js';
+import User from './db/User';
+import Track from './db/Track';
+import spotify from './spotify';
+import constants from './constants';
 
 class Tuneup {
 	hasUser(spotifyId) {
@@ -45,8 +46,14 @@ class Tuneup {
 	}
 
 	async getRecents(spotifyId) {
-		const trackIds = await User.getRecentTracksForUser(spotifyId);
-		return this.getTracks(spotifyId, trackIds);
+		const lastUpdated = await User.getLastUpdatedTimeForUser(spotifyId); 
+		if (Date.now() - lastUpdated < constants.USER_UPDATE_THRESHOLD) {
+			const trackIds = await User.getRecentTracksForUser(spotifyId);
+			return this.getTracks(spotifyId, trackIds);
+		} 
+		const newRecentTracks = await spotify.getRecentTracksForUser(spotifyId);
+		await Promise.all(newRecentTracks.map(newTrack => Track.addTrack(newTrack)));
+		
 	}
 
 	async getCurrentTrack(spotifyId) {
