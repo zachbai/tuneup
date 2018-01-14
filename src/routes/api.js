@@ -135,55 +135,6 @@ Router.get('/following', async (req, res) => {
 	}
 });
 
-Router.get('/recents', async (req,res) => {
-	const spotifyId = req.decoded.spotifyId;
-	if (!spotifyId) {
-		res.json({
-			success: false,
-			message: 'Invalid token supplied'
-		});
-	}
-
-	try {
-		const tracks = await tuneup.getRecents(spotifyId);
-		res.json({
-			success: true,
-			recents: tracks 
-		});
-	} catch(err) {
-		console.log(err);
-		res.json({
-			success: false,
-			message: 'Could not get user\'s recents'
-		});
-	}
-});
-
-Router.get('/tracks', async (req, res) => {
-	const spotifyId = req.decoded.spotifyId;
-	if (!spotifyId) {
-		res.json({
-			success: false,
-			message: 'Invalid token supplied'
-		});
-	}
-	const trackIds = req.query.ids.split(',');	
-
-	try {
-		const tracks = await tuneup.getTracks(spotifyId, trackIds);
-		res.json({
-			success: true,
-			tracks: tracks
-		});
-	} catch(err) {
-		console.log(err);
-		res.json({
-			success: false,
-			message: 'Could not get user\'s recents'
-		});
-	}
-});
-
 Router.get('/current', async (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
@@ -194,10 +145,10 @@ Router.get('/current', async (req, res) => {
 	}
 
 	try {
-		const currentTrack = await tuneup.getCurrentTrack(spotifyId);
+		const currentPlayback = await tuneup.getCurrentPlayback(spotifyId);
 		res.json({
 			success: true,
-			currentTrack: currentTrack,
+			currentPlayback: currentPlayback,
 		});
 	} catch(err) {
 		console.log(err);

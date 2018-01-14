@@ -5,27 +5,19 @@ import config from '../config.js';
 class Spotify {
 	async newUser(code, facebookId) {
 		const tokens = await this.getTokens(code);	
-		const userInfo = await Promise.all([
-			this.getUserProfile(tokens.accessToken),
-			this.getCurrentTrack(tokens.accessToken),
-			this.getRecentTracks(tokens.accessToken, 25)
-		]);
-		const userProfile = userInfo[0];
-		const currentTrack = userInfo[1];
-		const recentsTrackIds = userInfo[2].map((track) => track.id);
+		const userInfo = await this.getUserProfile(tokens.accessToken);
 
 		let newUser = {
-			username: userProfile.username,
+			username: userInfo.username,
 			spotifyAccessToken: tokens.accessToken,
 			spotifyRefreshToken: tokens.refreshToken,
-			spotifyId: userProfile.spotifyId,
+			spotifyAccessTokenExpiry: tokens.expiry,
+			spotifyId: userInfo.spotifyId,
 			facebookId: facebookId,
-			imageUrl: userProfile.imageUrl,
-			currentTrackId: currentTrack ? currentTrack.id : null,
-			lastUpdated: Date.now(),
+			imageUrl: userInfo.imageUrl,
+			timestamp: Date.now(),
 			followers: [],
 			following: [],
-			recents: recentsTrackIds,
 		};
 
 		return newUser;
@@ -49,10 +41,33 @@ class Spotify {
 			return {
 				accessToken: res.access_token,
 				refreshToken: res.refresh_token,
+				expiry: Date.now() + (res.expires_in - 60) * 1000
 			};
 		}).catch(err => console.log(err));
 
 		return tokens;
+	}
+
+	async getNewAccessToken(refreshToken) {
+		const options = {
+			url: 'https://accounts.spotify.com/api/token',
+			form: {
+				grant_type: 'refresh_token',
+				refresh_token: refreshToken,
+			},
+			headers: {
+				'Authorization': 'Basic ' + (new Buffer(config.spotifyClientId + ':' + config.spotifyClientSecret).toString('base64'))
+			},
+			json: true
+		};	
+
+		const newAccessToken = await request.post(options).then(response => {
+			return {
+				accessToken: response.access_token,
+				expiry: Date.now() + (response.expires_in - 60) * 1000
+			};
+		});
+		return newAccessToken;
 	}
 
 	async getUserProfile(access_token) {
@@ -74,32 +89,58 @@ class Spotify {
 		return profile;
 	}
 
-	async getCurrentTrack(access_token) {
+	async getCurrentPlayback(access_token) {
 		let options = {
-			url: 'https://api.spotify.com/v1/me/player/currently-playing',
+			url: 'https://api.spotify.com/v1/me/player',
 			headers: {
 				'Authorization': 'Bearer ' + access_token,
 			},
 			json: true
 		};
 
-		let track = await request.get(options).then(response => {
+		const currentPlayback = await request.get(options).then(response => {
 			if (response) {
-				const fullTrack = response.item;
+				if (!response.item)
+					return null;
+
+				const device = {
+					name: response.device.name,
+					isActive: response.device.is_active,
+					isRestricted: response.device.is_restricted,
+					type: response.device.type,
+					volumePercent: response.device.volume_percent
+				};
+				const context = response.context ? {
+					type: response.context.type,
+					url: response.context.external_urls.spotify
+				} : null;
+				const item = response.item;
 				return {
-					id: fullTrack.id,
-					title: fullTrack.name,
-					artist: fullTrack.artists[0].name,
-					album: fullTrack.album.name,
-					albumArt: fullTrack.album.images[0].url,
-					duration: fullTrack.duration_ms,
-					url: fullTrack.external_urls.spotify
+					timestamp: response.timestamp,
+					progress: response.progress_ms,
+					isPlaying: response.is_playing,
+					device,
+					context,
+					track: {
+						id: item.id,
+						name: item.name,
+						popularity: item.popularity,
+						duration: item.duration_ms,
+						url: item.external_urls.spotify
+					},
+					artists: item.artists.map(artist => artist.name),
+					album: {
+						id: item.album.id,
+						name: item.album.name,
+						imageUrl: item.album.images[0].url,
+						type: item.album.album_type
+					}
 				};
 			}
 			else 
 				return null;
 		}).catch(err => console.log(err));
-		return track;
+		return currentPlayback;
 	}
 
 	async getRecentTracks(access_token, numRecent) {
@@ -137,15 +178,22 @@ class Spotify {
 			json: true
 		};
 
-		let fullTrack = await request.get(options);
+		let item = await request.get(options);
 		return {
-			id: fullTrack.id,
-			title: fullTrack.name,
-			artist: fullTrack.artists[0].name,
-			album: fullTrack.album.name,
-			albumArt: fullTrack.album.images[0].url,
-			duration: fullTrack.duration_ms,
-			url: fullTrack.external_urls.spotify
+			track: {
+				id: item.id,
+				name: item.name,
+				popularity: item.popularity,
+				duration: item.duration_ms,
+				url: item.external_urls.spotify
+			},
+			artists: item.artists.map(artist => artist.name),
+			album: {
+				id: item.album.id,
+				name: item.album,
+				imageUrl: item.album.images[0].url,
+				type: item.album.album_type
+			}
 		};
 	}
 }

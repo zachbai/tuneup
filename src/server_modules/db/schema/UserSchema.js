@@ -8,10 +8,11 @@ const USERNAME_KEY = 'un';
 const SPOTIFY_ID_KEY = 'si';
 const FACEBOOK_ID_KEY = 'f';
 const USER_IMAGE_KEY = 'ui';
-const CURRENT_TRACK_KEY = 'ct';
+
 const SPOTIFY_ACCESS_TOKEN_KEY = 'sa';
 const SPOTIFY_REFRESH_TOKEN_KEY = 'sr';
-const LAST_UPDATED_KEY = 'lu';
+const SPOTIFY_ACCESS_TOKEN_EXPIRY_KEY = 'se';
+const TIMESTAMP_KEY = 'ti';
 
 /*
  * User Schema defined as:
@@ -43,10 +44,10 @@ exports.spotifyIdKey = SPOTIFY_ID_KEY;
 exports.facebookIdKey = FACEBOOK_ID_KEY;
 exports.usernameKey = USERNAME_KEY;
 exports.userImageKey = USER_IMAGE_KEY;
-exports.currentTrackKey = CURRENT_TRACK_KEY;
 exports.spotifyAccessKey = SPOTIFY_ACCESS_TOKEN_KEY;
 exports.spotifyRefreshKey = SPOTIFY_REFRESH_TOKEN_KEY;
-exports.lastUpdatedKey = LAST_UPDATED_KEY;
+exports.spotifyAccessExpiryKey = SPOTIFY_ACCESS_TOKEN_EXPIRY_KEY;
+exports.timestampKey = TIMESTAMP_KEY;
 
 const userKey = id => {
 	return USER_KEY + ':' + id;

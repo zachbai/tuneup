@@ -1,5 +1,5 @@
 import User from './db/User';
-import Track from './db/Track';
+import UserPlayback from './db/UserPlayback';
 import spotify from './spotify';
 import constants from './constants';
 
@@ -9,8 +9,27 @@ class Tuneup {
 	}
 
 	async addUser(code, facebookId) {
-		const newUser = await spotify.newUser(code, facebookId);
-		return User.addUser(newUser).then(() => newUser.spotifyId);
+		try {
+			const newUser = await spotify.newUser(code, facebookId);
+			await User.addUser(newUser);
+			this.pollUser(newUser.spotifyId);
+			return newUser.spotifyId;
+		} catch(err) {
+			throw 'Could not add user';
+		}
+	}
+
+	pollUser(spotifyId) {
+		setInterval(async () => {
+			const accessToken = await this.getValidAccessToken(spotifyId);
+			const currentPlayback = await spotify.getCurrentPlayback(accessToken);
+			const oldCurrentPlayback = await UserPlayback.getUserPlayback(spotifyId);
+			if (currentPlayback.track.id != oldCurrentPlayback.track.id) {
+				console.log(currentPlayback);
+				UserPlayback.setUserPlayback(spotifyId, currentPlayback);	
+			}
+
+		}, 2 * 1000);
 	}
 
 	getUser(spotifyId) {
@@ -26,15 +45,9 @@ class Tuneup {
 	}
 
 	async getTrack(spotifyId, trackId) {
-		const accessToken = await User.getSpotifyAccessTokenForUser(spotifyId);
-		const hasTrack = await Track.hasTrack(trackId);
-		if (hasTrack)
-			return Track.getTrack(trackId);
-		else {
-			const track = await spotify.getTrackInfo(accessToken, trackId);
-			await Track.addTrack(track);
-			return track;
-		} 
+		// const accessToken = await User.getSpotifyAccessTokenForUser(spotifyId);
+		const accessToken = await this.getValidAccessToken(spotifyId);
+		return spotify.getTrackInfo(accessToken, trackId);
 	}
 
 	getTracks(spotifyId, trackIds) {
@@ -45,20 +58,24 @@ class Tuneup {
 		return Promise.all(trackPromises);
 	}
 
-	async getRecents(spotifyId) {
-		const lastUpdated = await User.getLastUpdatedTimeForUser(spotifyId); 
-		if (Date.now() - lastUpdated < constants.USER_UPDATE_THRESHOLD) {
-			const trackIds = await User.getRecentTracksForUser(spotifyId);
-			return this.getTracks(spotifyId, trackIds);
-		} 
-		const newRecentTracks = await spotify.getRecentTracksForUser(spotifyId);
-		await Promise.all(newRecentTracks.map(newTrack => Track.addTrack(newTrack)));
-		
+	async getCurrentPlayback(spotifyId) {
+		const accessToken = await this.getValidAccessToken(spotifyId);
+		return spotify.getCurrentPlayback(accessToken);
 	}
 
-	async getCurrentTrack(spotifyId) {
-		const trackId = await User.getCurrentTrackForUser(spotifyId);
-		return this.getTrack(spotifyId, trackId);
+	async getValidAccessToken(spotifyId) {
+		const expiry = await User.getSpotifyAccessTokenExpiryForUser(spotifyId);
+		if (Date.now() > expiry - 1000) {
+			const refreshToken = await User.getSpotifyRefreshTokenForUser(spotifyId);
+			const newAccessToken = await spotify.getNewAccessToken(refreshToken);	
+			await Promise.all([
+				User.setSpotifyAccessTokenForUser(newAccessToken.accessToken),
+				User.setSpotifyAccessTokenExpiryForUser(newAccessToken.expiry)
+			]);
+			return newAccessToken.accessToken;
+		}
+		else
+			return User.getSpotifyAccessTokenForUser(spotifyId);
 	}
 }
 export default new Tuneup();
