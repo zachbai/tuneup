@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 
 const CellView = (props) => {
-    return (
-        <div className={classNames('cell-container')}>
+	return (
+		<div className={classNames('cell-container')}>
             cell
-        </div>
-    );
+		</div>
+	);
 };
 
 export default CellView;

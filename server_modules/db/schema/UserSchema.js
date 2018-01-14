@@ -1,17 +1,17 @@
-const USER_ID_KEY = "usr:id";
-const USER_KEY = "usr";
-const USER_RECENTS_KEY = "r";
-const USER_FOLLOWING_KEY = "fw";
-const USER_FOLLOWERS_KEY = "fr";
+const USER_ID_KEY = 'usr:id';
+const USER_KEY = 'usr';
+const USER_RECENTS_KEY = 'r';
+const USER_FOLLOWING_KEY = 'fw';
+const USER_FOLLOWERS_KEY = 'fr';
 
-const USERNAME_KEY = "un";
-const SPOTIFY_ID_KEY = "si";
-const FACEBOOK_ID_KEY = "f";
-const USER_IMAGE_KEY = "ui";
-const CURRENT_TRACK_KEY = "ct";
-const SPOTIFY_ACCESS_TOKEN_KEY = "sa";
-const SPOTIFY_REFRESH_TOKEN_KEY = "sr";
-const LAST_UPDATED_KEY = "lu";
+const USERNAME_KEY = 'un';
+const SPOTIFY_ID_KEY = 'si';
+const FACEBOOK_ID_KEY = 'f';
+const USER_IMAGE_KEY = 'ui';
+const CURRENT_TRACK_KEY = 'ct';
+const SPOTIFY_ACCESS_TOKEN_KEY = 'sa';
+const SPOTIFY_REFRESH_TOKEN_KEY = 'sr';
+const LAST_UPDATED_KEY = 'lu';
 
 /*
  * User Schema defined as:
@@ -49,19 +49,19 @@ exports.spotifyRefreshKey = SPOTIFY_REFRESH_TOKEN_KEY;
 exports.lastUpdatedKey = LAST_UPDATED_KEY;
 
 const userKey = id => {
-	return USER_KEY + ":" + id;
-}
+	return USER_KEY + ':' + id;
+};
 
 exports.userFollowingKey = (id) => {
-	return userKey(id) + ":" + USER_FOLLOWING_KEY;
-}
+	return userKey(id) + ':' + USER_FOLLOWING_KEY;
+};
 
 exports.userFollowersKey = (id) => {
-	return userKey(id) + ":" + USER_FOLLOWERS_KEY;
-}
+	return userKey(id) + ':' + USER_FOLLOWERS_KEY;
+};
 
 exports.userRecentsKey = (id) => {
-	return userKey(id) + ":" + USER_RECENTS_KEY;
-}
+	return userKey(id) + ':' + USER_RECENTS_KEY;
+};
 
 exports.userKey = userKey;

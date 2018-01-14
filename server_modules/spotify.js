@@ -1,13 +1,17 @@
 const request = require('request-promise-native');
 const querystring = require('querystring');
+const config = require('../config.js');
 
-const db = require('../db.js');
-
-async function addUser(code, redirectUri, clientId, clientSecret, facebookId) {
-	let tokens = await getSpotifyAuthTokens(code, redirectUri, clientId, clientSecret);	
-	let currentTrack = await getCurrentPlaying(tokens.accessToken);
-	let userProfile = await getUserProfile(tokens.accessToken);
-	let recents = await getTenRecentTracks(tokens.accessToken);
+const newUser = async (code, facebookId) => {
+	const tokens = await getTokens(code);	
+	const userInfo = await Promise.all([
+		getUserProfile(tokens.accessToken),
+		getCurrentTrack(tokens.accessToken),
+		getRecentTracks(tokens.accessToken, 25)
+	]);
+	const userProfile = userInfo[0];
+	const currentTrack = userInfo[1];
+	const recentsTrackIds = userInfo[2].map((obj) => obj.track.id);
 
 	let newUser = {
 		username: userProfile.username,
@@ -20,29 +24,27 @@ async function addUser(code, redirectUri, clientId, clientSecret, facebookId) {
 		lastUpdated: Date.now(),
 		followers: [],
 		following: [],
-		recents: recents,
+		recents: recentsTrackIds,
 	};
 
-	return db.addUser(newUser).then(() => {
-		return userProfile.spotifyId;
-	}).catch(err => console.log(err));
-}
+	return newUser;
+};
 
-async function getSpotifyAuthTokens(code, redirectUri, clientId, clientSecret) {
-	let authOptions = {
+const getTokens = async (code) => {
+	const authOptions = {
 		url: 'https://accounts.spotify.com/api/token',
 		form: {
 			code: code,
-			redirect_uri: redirectUri,
+			redirect_uri: config.spotifyRedirectUri,
 			grant_type: 'authorization_code'
 		},
 		headers: {
-			'Authorization': 'Basic ' + (new Buffer(clientId + ':' + clientSecret).toString('base64'))
+			'Authorization': 'Basic ' + (new Buffer(config.spotifyClientId + ':' + config.spotifyClientSecret).toString('base64'))
 		},
 		json: true
 	};	
 
-	let tokens = await request.post(authOptions).then(res => {
+	const tokens = await request.post(authOptions).then(res => {
 		return {
 			accessToken: res.access_token,
 			refreshToken: res.refresh_token,
@@ -50,28 +52,9 @@ async function getSpotifyAuthTokens(code, redirectUri, clientId, clientSecret) {
 	}).catch(err => console.log(err));
 
 	return tokens;
-}
+};
 
-async function getCurrentPlaying(access_token) {
-	let options = {
-		url: 'https://api.spotify.com/v1/me/player/currently-playing',
-		headers: {
-			'Authorization': 'Bearer ' + access_token,
-		},
-		json: true
-	};
-
-	let track = await request.get(options).then(response => {
-		if (response)
-			return response.item;
-		else 
-			return null;
-	}).catch(err => console.log(err));
-
-	return track;
-}
-
-async function getUserProfile(access_token) {
+const getUserProfile = async access_token => {
 	let options = {
 		url: 'https://api.spotify.com/v1/me',
 		headers: {
@@ -88,12 +71,30 @@ async function getUserProfile(access_token) {
 		};
 	}).catch(err => console.log(err));
 	return profile;
-}
+};
 
-async function getTenRecentTracks(access_token) {
+const getCurrentTrack = async access_token => {
+	let options = {
+		url: 'https://api.spotify.com/v1/me/player/currently-playing',
+		headers: {
+			'Authorization': 'Bearer ' + access_token,
+		},
+		json: true
+	};
+
+	let track = await request.get(options).then(response => {
+		if (response)
+			return response.item;
+		else 
+			return null;
+	}).catch(err => console.log(err));
+	return track;
+};
+
+const getRecentTracks = async (access_token, numRecent) => {
 	let options = {
 		url: 'https://api.spotify.com/v1/me/player/recently-played?' + 
-			querystring.stringify({limit: 10}),
+			querystring.stringify({limit: numRecent}),
 		headers: {
 			'Authorization': 'Bearer ' + access_token,
 		},
@@ -104,9 +105,9 @@ async function getTenRecentTracks(access_token) {
 		.then(response => response.items)
 		.catch(err => console.log(err));
 	return recents;
-}
+};
 
-async function getTrackInfo(accessToken, trackId) {
+const getTrackInfo = async (accessToken, trackId) => {
 	let options = {
 		url: 'https://api.spotify.com/v1/tracks/' + trackId,
 		headers: {
@@ -125,39 +126,11 @@ async function getTrackInfo(accessToken, trackId) {
 		duration: fullTrack.duration_ms,
 		url: fullTrack.external_urls.spotify
 	};
-}
+};
 
-async function getTracksInfo(accessToken, trackIds) {
-	let querystring = '';
-	for (let i = 0; i < trackIds.length; i++)  {
-		querystring += i < trackIds.length - 1 
-			? trackIds[i] + ','
-			: trackIds[i];
-	}
-
-	let options = {
-		url: 'https://api.spotify.com/v1/tracks/?ids=' + querystring,
-		headers: {
-			'Authorization': 'Bearer ' + accessToken,
-		},
-		json: true
-	};
-
-	let fullTracks = await request.get(options);
-
-	return fullTracks.map(fullTrack => {
-		return {
-			id: fullTrack.id,
-			title: fullTrack.name,
-			artist: fullTrack.artists[0].name,
-			album: fullTrack.album.name,
-			albumArt: fullTrack.album.images[0].url,
-			duration: fullTrack.duration_ms,
-			url: fullTrack.external_urls.spotify
-		};
-	});
-}
-
-exports.getTokens = getSpotifyAuthTokens;
-exports.addUser = addUser;
-exports.getTrackInfo = getTrackInfo;
+module.exports = {
+	newUser,
+	getCurrentTrack,
+	getRecentTracks,
+	getTrackInfo,
+};

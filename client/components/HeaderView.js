@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 import classNames from 'classnames';
 
 const HeaderView = (props) => {
-    return (
-        <div className={classNames('header')}>
-            <div className={classNames('header-text')}>
+	return (
+		<div className={classNames('header')}>
+			<div className={classNames('header-text')}>
                 tuneup
-            </div>
-        </div>
-    );
+			</div>
+		</div>
+	);
 };
 
 export default HeaderView;

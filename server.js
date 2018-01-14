@@ -6,17 +6,15 @@ const morgan = require('morgan');
 const path = require('path');
 const webpack = require('webpack');
 const webpackDevMiddleware = require('webpack-dev-middleware');
-// end imports --------------------------------->
-
-const db = require('./db.js');
 const webpackConfig = require('./webpack.config.js');
-
-// express routes
+const db = require('./server_modules/db.js');
 const apiRoutes = require('./routes/api.js');
 const loginRoutes = require('./routes/login.js');
+// end imports --------------------------------->
 
+db.connect();
 const app = express();
-const compiler = webpack(webpackConfig); db.connect();
+const compiler = webpack(webpackConfig); 
 
 // middleware
 app.use(cookieParser());
@@ -33,12 +31,6 @@ app.use('/api', apiRoutes);
 app.use('/login', loginRoutes);
 
 app.get('/', (req, res) => {
-	/*let fbLoggedIn = req.cookies ? req.cookies[fbUserKey] : null;
-	let spotifyLoggedIn = req.cookies ? req.cookies[spotifyUserKey] : null;
-	if (fbLoggedIn && spotifyLoggedIn) {
-		res.send('logged in on both!');
-		return;
-	}*/
 	res.sendFile(path.resolve('index.html'));
 });
 

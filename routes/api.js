@@ -1,14 +1,12 @@
 const express = require('express');
-const path = require('path');
 const jwt = require('jsonwebtoken');
 
-const config = require(path.resolve('./config.js'));
-const db = require(path.resolve('./db.js'));
-const spotify = require(path.resolve('./server_modules/spotify.js'));
+const config = require('../config.js');
+const tuneup = require('../server_modules/tuneup.js');
 
 const router = express.Router();
 
-router.post('/auth', (req, res) => {
+router.post('/auth', async (req, res) => {
 	const spotifyId = req.body.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -17,26 +15,30 @@ router.post('/auth', (req, res) => {
 		});
 	}
 
-	db.hasUser(spotifyId).then((result) => {
-		if (result) {
+	try {
+		const hasUser = await tuneup.hasUser(spotifyId);
+		if (hasUser) {
 			const payload = {
 				spotifyId: spotifyId
 			};
-
-			const token = jwt.sign(payload, config.appSecret, {
+			const tokenOptions = {
 				expiresIn: '1440m' // expires in 24 hours
-			});
+			};
+
+			const token = jwt.sign(payload, config.appSecret, tokenOptions);
+			res.clearCookie(config.spotifyIdCookieKey);
 			res.json({
 				success: true,
 				tuneup_token: token
 			});
-		} else {
-			res.json({
-				success: false,
-				message: 'User does not exist'
-			});
-		}
-	});
+		} else 
+			throw 'User doesdb not exist';
+	} catch(err) {
+		res.json({
+			success: false,
+			message: 'User does not exist'
+		});
+	}
 });
 
 router.use((req, res, next) => {
@@ -59,7 +61,7 @@ router.use((req, res, next) => {
 	}
 });
 
-router.get('/me', (req, res) => {
+router.get('/me', async (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -68,22 +70,24 @@ router.get('/me', (req, res) => {
 		});
 	}
 
-	db.getUser(spotifyId).then(user => {
+	try {
+		const user = await tuneup.getUser(spotifyId);
 		res.json({
 			success: true,
 			payload: user 
 		});
-	}).catch((err) => {
+
+	} catch(err) {
 		console.log(err);
 		res.json({
 			success: false,
 			message: 'Could not get user\'s profile'
 		});
-	});
-})
+	}
+});
 
 // TODO: support query parameters for specific followers
-router.get('/followers', (req, res) => {
+router.get('/followers', async (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -92,22 +96,23 @@ router.get('/followers', (req, res) => {
 		});
 	}
 
-	db.getFollowersForUser(spotifyId).then((followers) => {
+	try {
+		const followers = await tuneup.getFollowers(spotifyId);
 		res.json({
 			success: true,
 			payload: followers 
 		});
-	}).catch((err) => {
+	} catch(err) {
 		console.log(err);
 		res.json({
 			success: false,
 			message: 'Could not get user\'s followers'
 		});
-	});
+	}
 });
 
 // TODO: support query parameters for specific following
-router.get('/following', (req, res) => {
+router.get('/following', async (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -116,18 +121,19 @@ router.get('/following', (req, res) => {
 		});
 	}
 
-	db.getFollowingForUser(spotifyId).then((following) => {
+	try {
+		const following = await tuneup.getFollowing(spotifyId);
 		res.json({
 			success: true,
 			payload: following 
 		});
-	}).catch((err) => {
+	} catch(err) {
 		console.log(err);
 		res.json({
 			success: false,
 			message: 'Could not get user\'s following'
 		});
-	});
+	}
 });
 
 router.get('/recents', async (req,res) => {
@@ -140,24 +146,35 @@ router.get('/recents', async (req,res) => {
 	}
 
 	try {
-		const recents = await db.getRecentsForUser(spotifyId);
-		let accessToken = await db.getSpotifyAccessTokenForUser(spotifyId);
-
-		let tracks = await Promise.all(recents.map(trackId => {
-			return db.hasTrack(trackId).then(present => {
-				if (present)
-					return db.getTrack(trackId);
-				else 
-					return spotify.getTrackInfo(accessToken, trackId)
-						.then(track => {
-							return db.addTrack(track);
-						});
-			});
-		}));
-
+		const tracks = await tuneup.getRecents(spotifyId);
 		res.json({
 			success: true,
 			recents: tracks 
+		});
+	} catch(err) {
+		console.log(err);
+		res.json({
+			success: false,
+			message: 'Could not get user\'s recents'
+		});
+	}
+});
+
+router.get('/tracks', async (req, res) => {
+	const spotifyId = req.decoded.spotifyId;
+	if (!spotifyId) {
+		res.json({
+			success: false,
+			message: 'Invalid token supplied'
+		});
+	}
+	const trackIds = req.query.ids.split(',');	
+
+	try {
+		const tracks = await tuneup.getTracks(spotifyId, trackIds);
+		res.json({
+			success: true,
+			tracks: tracks
 		});
 	} catch(err) {
 		console.log(err);
@@ -178,18 +195,10 @@ router.get('/current', async (req, res) => {
 	}
 
 	try {
-		const trackId = await db.getCurrentTrackForUser(spotifyId);
-		let track = await db.getTrack(trackId);
-		let accessToken = null;
-		if (!track) {
-			if (!accessToken)
-				accessToken = await db.getSpotifyAccessTokenForUser(spotifyId);
-			track = await spotify.getTrackInfo(accessToken, trackId);
-		}
-
+		const currentTrack = await tuneup.getCurrentTrack(spotifyId);
 		res.json({
 			success: true,
-			currentTrack: track,
+			currentTrack: currentTrack,
 		});
 	} catch(err) {
 		console.log(err);

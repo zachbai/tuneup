@@ -1,4 +1,3 @@
-const webpack = require('webpack');
 const path = require('path');
 
 const BUILD_DIR = path.resolve(__dirname, './client/dist');
@@ -19,15 +18,15 @@ const config = {
 			{
 				test: /(\.css|.scss)$/,
 				use: [
-				{
-					loader: 'style-loader'
-				},
-				{
-					loader: 'css-loader'
-				},
-				{
-					loader: 'sass-loader'
-				}]
+					{
+						loader: 'style-loader'
+					},
+					{
+						loader: 'css-loader'
+					},
+					{
+						loader: 'sass-loader'
+					}]
 			},
 			{
 				test: /\.(jsx|js)?$/,

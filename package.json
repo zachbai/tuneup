@@ -8,6 +8,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
+    "db": "cd db && redis-server",
     "server": "nodemon server.js"
   },
   "dependencies": {
@@ -22,7 +23,6 @@
     "css-loader": "^0.28.7",
     "express": "^4.16.2",
     "express-router": "^0.0.1",
-    "form-data": "^2.3.1",
     "headers": "^0.9.6",
     "ioredis": "^3.2.2",
     "jsonwebtoken": "^8.1.0",

@@ -1,16 +1,15 @@
-import React, { Component } from 'react';
+import React from 'react';
 import classNames from 'classnames';
-import querystring from 'querystring';
 
-function SpotifyLoginButton(props) {
-    return (
-        <div 
-            className={classNames('button', 'spotify')}
-            onClick={props.onClick}
-        >
+const SpotifyLoginButton = (props) => {
+	return (
+		<div 
+			className={classNames('button', 'spotify')}
+			onClick={props.onClick}
+		>
             Log in with Spotify
-        </div>
-    ) 
-}
+		</div>
+	); 
+};
 
 export default SpotifyLoginButton;

@@ -1,8 +1,4 @@
 import React, { Component } from 'react'; 
-import querystring from 'querystring';
-
-import constants from '../core/constants.js';
-import shared from '../core/shared.js';
 
 class FacebookLoginButton extends Component {
 	componentDidMount() {
@@ -23,11 +19,11 @@ class FacebookLoginButton extends Component {
 		
 
 		(function(d, s, id){
-		 var js, fjs = d.getElementsByTagName(s)[0];
-		 if (d.getElementById(id)) {return;}
-		 js = d.createElement(s); js.id = id;
-		 js.src = "https://connect.facebook.net/en_US/sdk.js";
-		 fjs.parentNode.insertBefore(js, fjs);
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) {return;}
+			js = d.createElement(s); js.id = id;
+			js.src = 'https://connect.facebook.net/en_US/sdk.js';
+			fjs.parentNode.insertBefore(js, fjs);
 		}(document, 'script', 'facebook-jssdk'));
 	}	
 
@@ -41,7 +37,7 @@ class FacebookLoginButton extends Component {
 				data-auto-logout-link="false" 
 				data-use-continue-as="false">
 			</div>
-		)
+		);
 	}
 }
 
