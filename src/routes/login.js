@@ -1,16 +1,17 @@
-const express = require('express');
-const path = require('path');
-const querystring = require('querystring');
-const router = express.Router();
+import express from 'express';
+import path from 'path';
+import querystring from 'querystring';
+import config from '../config.js';
+import tuneup from '../server_modules/tuneup';
+import utils from '../server_modules/utils.js';
 
-const config = require('../config.js');
-const tuneup = require('../server_modules/tuneup');
-const utils = require('../server_modules/utils.js');
+
+const  Router = express.Router();
 
 // cookies keys
 const stateKey = 'spotify_auth_state';
 
-router.get('/spotify', (req, res) => {
+Router.get('/spotify', (req, res) => {
 	const state = utils.generateRandomString(16);	
 	res.cookie(stateKey, state);
 
@@ -25,7 +26,7 @@ router.get('/spotify', (req, res) => {
 		}));
 });
 
-router.get('/spotify-callback', async (req, res) => {
+Router.get('/spotify-callback', async (req, res) => {
 	const code = req.query.code || null;	
 	const state = req.query.state || null;
 	const storedState = req.cookies ? req.cookies[stateKey] : null;
@@ -50,4 +51,4 @@ router.get('/spotify-callback', async (req, res) => {
 	}
 });
 
-module.exports = router;
+export default Router;

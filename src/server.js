@@ -1,18 +1,18 @@
 // imports ------------------------------------->
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser'); 
-const express = require('express'); 
-const morgan = require('morgan');
-const path = require('path');
-const webpack = require('webpack');
-const webpackDevMiddleware = require('webpack-dev-middleware');
-const webpackConfig = require('./webpack.config.js');
-const db = require('./server_modules/db.js');
-const apiRoutes = require('./routes/api.js');
-const loginRoutes = require('./routes/login.js');
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser'; 
+import express from 'express'; 
+import morgan from 'morgan';
+import path from 'path';
+import webpack from 'webpack';
+import webpackDevMiddleware from 'webpack-dev-middleware';
+import webpackConfig from '../webpack.config.js';
+import Db from './server_modules/db.js';
+import apiRoutes from './routes/api.js';
+import loginRoutes from './routes/login.js';
 // end imports --------------------------------->
 
-db.connect();
+Db.connect();
 const app = express();
 const compiler = webpack(webpackConfig); 
 

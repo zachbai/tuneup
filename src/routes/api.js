@@ -1,12 +1,11 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import config from '../config.js';
+import tuneup from '../server_modules/tuneup.js';
 
-const config = require('../config.js');
-const tuneup = require('../server_modules/tuneup.js');
+const Router = express.Router();
 
-const router = express.Router();
-
-router.post('/auth', async (req, res) => {
+Router.post('/auth', async (req, res) => {
 	const spotifyId = req.body.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -41,7 +40,7 @@ router.post('/auth', async (req, res) => {
 	}
 });
 
-router.use((req, res, next) => {
+Router.use((req, res, next) => {
 	var token = req.body.token || req.query.token || req.headers['x-access-token'];
 	if (token) {
 		// verify token
@@ -61,7 +60,7 @@ router.use((req, res, next) => {
 	}
 });
 
-router.get('/me', async (req, res) => {
+Router.get('/me', async (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -87,7 +86,7 @@ router.get('/me', async (req, res) => {
 });
 
 // TODO: support query parameters for specific followers
-router.get('/followers', async (req, res) => {
+Router.get('/followers', async (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -112,7 +111,7 @@ router.get('/followers', async (req, res) => {
 });
 
 // TODO: support query parameters for specific following
-router.get('/following', async (req, res) => {
+Router.get('/following', async (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -136,7 +135,7 @@ router.get('/following', async (req, res) => {
 	}
 });
 
-router.get('/recents', async (req,res) => {
+Router.get('/recents', async (req,res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -160,7 +159,7 @@ router.get('/recents', async (req,res) => {
 	}
 });
 
-router.get('/tracks', async (req, res) => {
+Router.get('/tracks', async (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -185,7 +184,7 @@ router.get('/tracks', async (req, res) => {
 	}
 });
 
-router.get('/current', async (req, res) => {
+Router.get('/current', async (req, res) => {
 	const spotifyId = req.decoded.spotifyId;
 	if (!spotifyId) {
 		res.json({
@@ -209,4 +208,4 @@ router.get('/current', async (req, res) => {
 	}
 });
 
-module.exports = router;
+export default Router;
