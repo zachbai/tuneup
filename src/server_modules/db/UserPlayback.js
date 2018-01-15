@@ -101,7 +101,7 @@ class UserPlayback {
 
 	__setCurrentContext(userId, currentContext) {
 		if (!currentContext) {
-			return db.get().del(schema.currentPlaybackContextKey);
+			return db.get().del(schema.currentPlaybackContextKey(userId));
 		}
 		return db.get().hmset(schema.currentPlaybackContextKey(userId), [
 			schema.currentPlaybackContextTypeKey, currentContext.type,
