@@ -1,6 +1,13 @@
 import TuneupActionTypes from './TuneupActionTypes';
 import shared from '../core/shared';
 
+export const setUserInfo = (userInfo) => {
+	return {
+		type: TuneupActionTypes.SET_USER_INFO,
+		userInfo
+	};
+};
+
 export const requestAddFollower = followerId => {
 	return {
 		type: TuneupActionTypes.REQUEST_ADD_FOLLOWER,
@@ -185,10 +192,10 @@ export const removeFollowing = followingId => {
 	};
 };
 
-export const updateCurrentTrack = (trackInfo, userId) => {
+export const updateCurrentPlayback = (currentPlayback, userId) => {
 	return {
-		type: TuneupActionTypes.UPDATE_CURRENT_TRACK,
-		trackInfo,
+		type: TuneupActionTypes.UPDATE_CURRENT_PLAYBACK,
+		currentPlayback,
 		userId
 	};
 };

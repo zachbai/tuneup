@@ -4,6 +4,15 @@ import spotify from './spotify';
 import constants from './constants';
 
 class Tuneup {
+	constructor() {
+		this.socket = null;
+	}
+
+	setSocket(socket) {
+		this.socket = socket;
+		this.pollUser(1213423571);
+	}
+
 	hasUser(spotifyId) {
 		return User.hasUser(spotifyId);
 	}
@@ -12,7 +21,7 @@ class Tuneup {
 		try {
 			const newUser = await spotify.newUser(code, facebookId);
 			await User.addUser(newUser);
-			this.pollUser(newUser.spotifyId);
+			// this.pollUser(newUser.spotifyId);
 			return newUser.spotifyId;
 		} catch(err) {
 			throw 'Could not add user';
@@ -26,6 +35,11 @@ class Tuneup {
 			const oldCurrentPlayback = await UserPlayback.getUserPlayback(spotifyId);
 			if (currentPlayback.track.id != oldCurrentPlayback.track.id) {
 				console.log(currentPlayback);
+				if (this.socket)
+					this.socket.emit('current-updated', {
+						userId: spotifyId,
+						currentPlayback: currentPlayback
+					});
 				UserPlayback.setUserPlayback(spotifyId, currentPlayback);	
 			}
 

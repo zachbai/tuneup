@@ -1,0 +1,66 @@
+.playback-image {
+	width: 300;
+	height: 300;
+	margin: 10;
+	border-radius: 15px;
+}
+
+.playback-user-image {
+	width: 100pt;
+	height: 100pt;
+	border-radius: 50pt;
+}
+
+.playback-container {
+	display: flex;
+	justify-content: space-around;
+	align-items: center;
+	padding-right: 10;
+	border-radius: 15px;
+
+	&:hover {
+		background-color: lightgreen;
+	}
+}
+
+.playback-info {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.playback-track-info {
+	display: flex;
+	justify-content: space-around;
+}
+
+.playback-user-text {
+    color: black;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: medium;
+    font-size: 18;
+}
+
+.playback-track-text {
+    color: black;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: bold;
+    font-size: 24;
+}
+
+.playback-artist-text {
+    color: black;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: medium;
+    font-size: 14;
+}
+
+.playback-album-text {
+	margin-left: 10;
+    color: black;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 14;
+}
+
+

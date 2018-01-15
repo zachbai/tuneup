@@ -4,17 +4,28 @@ import cookieParser from 'cookie-parser';
 import express from 'express'; 
 import morgan from 'morgan';
 import path from 'path';
+import { Server } from 'http';
+import socketio from 'socket.io';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackConfig from '../webpack.config.js';
-import Db from './server_modules/db.js';
+
+import db from './server_modules/db.js';
+import Tuneup from './server_modules/tuneup';
 import apiRoutes from './routes/api.js';
 import loginRoutes from './routes/login.js';
 // end imports --------------------------------->
 
-Db.connect();
+db.connect();
 const app = express();
+const server = new Server(app);
+const io = socketio(server);
 const compiler = webpack(webpackConfig); 
+
+io.on('connect', () => {
+	console.log('A client has connected');
+});
+Tuneup.setSocket(io);
 
 // middleware
 app.use(cookieParser());
@@ -38,4 +49,4 @@ app.get('/success', (req, res) => {
 	res.send('user added!');
 });
 
-app.listen(3000, () => console.log('Listening on port 3000...'));
+server.listen(3000, () => console.log('Listening on port 3000...'));

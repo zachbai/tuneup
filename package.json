@@ -41,6 +41,7 @@
     "request": "^2.83.0",
     "request-promise-native": "^1.0.5",
     "sass-loader": "^6.0.6",
+    "socket.io": "^2.0.4",
     "style-loader": "^0.19.1",
     "universal-cookie": "^2.1.2",
     "webpack": "^3.10.0"
