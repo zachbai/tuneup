@@ -13,6 +13,7 @@ export const trackNameKey = 'n';
 export const trackPopularityKey = 'p';
 export const trackDurationKey = 'd';
 export const trackUrlKey = 'u';
+export const trackUriKey = 'ui';
 
 // hash of album attributes
 export const currentPlaybackAlbumKey = id => currentPlaybackKey(id) + ':' + 'al';

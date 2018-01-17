@@ -126,7 +126,8 @@ class Spotify {
 						name: item.name,
 						popularity: item.popularity,
 						duration: item.duration_ms,
-						url: item.external_urls.spotify
+						url: item.external_urls.spotify,
+						uri: item.uri
 					},
 					artists: item.artists.map(artist => artist.name),
 					album: {
@@ -185,7 +186,8 @@ class Spotify {
 				name: item.name,
 				popularity: item.popularity,
 				duration: item.duration_ms,
-				url: item.external_urls.spotify
+				url: item.external_urls.spotify,
+				uri: item.uri
 			},
 			artists: item.artists.map(artist => artist.name),
 			album: {
@@ -195,6 +197,22 @@ class Spotify {
 				type: item.album.album_type
 			}
 		};
+	}
+
+	async putNewTrack(accessToken, spotifyUri) {
+		const options = {
+			url: 'https://api.spotify.com/v1/me/player/play',
+			headers: {
+				'Authorization': 'Bearer ' + accessToken,
+				'Content-type': 'application/json'
+			},
+			body: {
+				uris: [spotifyUri]	
+			},
+			json: true
+		};
+
+		return request.put(options).then(response => response.statusCode == 200);
 	}
 }
 

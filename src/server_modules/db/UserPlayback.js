@@ -115,14 +115,16 @@ class UserPlayback {
 			schema.trackNameKey,
 			schema.trackPopularityKey,
 			schema.trackDurationKey,
-			schema.trackUrlKey
+			schema.trackUrlKey,
+			schema.trackUriKey
 		]).then(result => {
 			return {
 				id: result[0],
 				name: result[1],
 				popularity: result[2],
 				duration: result[3],
-				url: result[4]	
+				url: result[4],
+				uri: result[5]
 			};
 		});
 	}
@@ -133,7 +135,8 @@ class UserPlayback {
 			schema.trackNameKey, currentTrack.name,
 			schema.trackPopularityKey, currentTrack.popularity,
 			schema.trackDurationKey, currentTrack.duration,
-			schema.trackUrlKey, currentTrack.url
+			schema.trackUrlKey, currentTrack.url,
+			schema.trackUriKey, currentTrack.uri
 		]);
 	}
 

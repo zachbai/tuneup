@@ -161,4 +161,30 @@ Router.get('/current', async (req, res) => {
 	}
 });
 
+Router.put('/play', async (req, res) => {
+	const spotifyId = req.decoded.spotifyId;
+	if (!spotifyId) {
+		res.json({
+			success: false,
+			message: 'Invalid token supplied'
+		});
+	}
+
+	try {
+		const success = await tuneup.putNewTrack(spotifyId, req.body.uri);
+		if (success) {
+			res.json({
+				success: true,
+			});
+		} else 
+			throw 'Could not set new track to play';
+	} catch(err) {
+		console.log(err);
+		res.json({
+			success: false,
+			message: 'Could not set new track to play'
+		});
+	}
+});
+
 export default Router;

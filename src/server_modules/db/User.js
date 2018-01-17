@@ -2,6 +2,10 @@ import db from '../db';
 import schema from './schema/UserSchema';
 
 class User {
+	getAllUsers() {
+		return db.get().smembers(schema.userSetKey);
+	}
+
 	/*
 		User information methods
 	*/

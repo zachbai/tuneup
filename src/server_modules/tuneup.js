@@ -1,16 +1,16 @@
 import User from './db/User';
 import UserPlayback from './db/UserPlayback';
 import spotify from './spotify';
-import constants from './constants';
 
 class Tuneup {
 	constructor() {
 		this.socket = null;
 	}
 
-	setSocket(socket) {
+	async setSocket(socket) {
 		this.socket = socket;
-		this.pollUser(1213423571);
+		const allUserIds = await User.getAllUsers();
+		allUserIds.forEach(id => this.pollUser(id));
 	}
 
 	hasUser(spotifyId) {
@@ -34,15 +34,22 @@ class Tuneup {
 			const currentPlayback = await spotify.getCurrentPlayback(accessToken);
 			const oldCurrentPlayback = await UserPlayback.getUserPlayback(spotifyId);
 			if (currentPlayback.track.id != oldCurrentPlayback.track.id) {
-				console.log(currentPlayback);
-				if (this.socket)
+				if (this.socket) {
 					this.socket.emit('current-updated', {
 						userId: spotifyId,
 						currentPlayback: currentPlayback
 					});
+				}
+				UserPlayback.setUserPlayback(spotifyId, currentPlayback);	
+			} else if (currentPlayback.isPlaying != oldCurrentPlayback.isPlaying) {
+				if (this.socket) {
+					this.socket.emit('current-updated-play-state', {
+						userId: spotifyId,
+						isPlaying: currentPlayback.isPlaying
+					});
+				}
 				UserPlayback.setUserPlayback(spotifyId, currentPlayback);	
 			}
-
 		}, 2 * 1000);
 	}
 
@@ -102,6 +109,11 @@ class Tuneup {
 		}
 		else
 			return User.getSpotifyAccessTokenForUser(spotifyId);
+	}
+
+	async putNewTrack(spotifyId, spotifyUri) {
+		const accessToken = await this.getValidAccessToken(spotifyId);
+		return spotify.putNewTrack(accessToken, spotifyUri);
 	}
 }
 export default new Tuneup();
