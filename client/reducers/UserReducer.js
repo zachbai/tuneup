@@ -60,6 +60,11 @@ const UserReducer = (state = initialState, action) => {
 			'followers': state.followers.filter(follower => follower.spotifyId !== action.followerId)
 		});
 
+	case TuneupActionTypes.SET_FOLLOWERS:
+		return Object.assign({}, state, {
+			followers: action.followers
+		});
+
 	case TuneupActionTypes.ADD_FOLLOWING:
 		return Object.assign({}, state, {
 			'following': [...state.following, action.following]
@@ -68,6 +73,11 @@ const UserReducer = (state = initialState, action) => {
 	case TuneupActionTypes.REMOVE_FOLLOWING:
 		return Object.assign({}, state, {
 			'following': state.following.filter(following => following.spotifyId !== action.followingId)
+		});
+		
+	case TuneupActionTypes.SET_FOLLOWING:
+		return Object.assign({}, state, {
+			following: action.following
 		});
 
 	case TuneupActionTypes.UPDATE_RECENTS:

@@ -1,66 +1,125 @@
-.playback-image {
-	width: 300;
-	height: 300;
-	margin: 10;
-	border-radius: 15px;
-}
-
-.playback-user-image {
-	width: 100pt;
-	height: 100pt;
-	border-radius: 50pt;
-}
-
-.playback-container {
+.my-playback-container {
 	display: flex;
-	justify-content: space-around;
+	width: 100%;
+	height: 200px;
+	padding: 10px;
+	background-color: $TUNEUP_COLORS_LIGHT_GREY;
+	border-radius: 8px;
+	justify-content: flex-start;
 	align-items: center;
-	padding-right: 10;
+}
+
+.my-playback-image {
+	height: 100%;
 	border-radius: 15px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.my-playback-info-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	margin-left: 10px;
+}
+
+.my-playback-user-container {
+	display: flex;
+	height: 50%;
+	align-items: center;
+	margin-bottom: 5px;
+	background-color: lightgrey;
+	padding: 10px;
+	border-radius: 15px;
+}
+
+.my-playback-user-image {
+	height: 70px;
+	border-radius: 50pt;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.my-playback-user-text {
+	margin-left: 10px;
+    color: $TUNEUP_COLORS_BLACK;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600;
+    font-size: 36;
+}
+
+.my-playback-listening-status-text {
+	margin-left: 10px;
+    font-family: 'Work Sans', sans-serif;
+	font-size: 24;
+	font-weight: 400;
+	color: $TUNEUP_COLORS_GREY;
+}
+
+.my-playback-listening-icon {
+	margin-top: 5px;
+	margin-left: 10px;
+	color: $TUNEUP_COLORS_GREY;
+}
+
+.my-playback-follow-container {
+	margin-left: 15px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.my-playback-followers-container, .my-playback-following-container {
+	display: flex;
+	margin-left: 15px;
+	flex-direction: column;
+	align-items: flex-start;	
+}
+
+.my-playback-follow-text {
+    font-family: 'Work Sans', sans-serif;
+	font-size: 18;
+	color: $TUNEUP_COLORS_GREY;
+}
+
+.my-playback-follow-data {
+	display: flex;
+	align-items: center;
+}
+
+.my-playback-follow-number {
+    font-family: 'Work Sans', sans-serif;
+	font-size: 28;
+	font-weight: 500;
+	color: $TUNEUP_COLORS_GREY;
+}
+
+.my-playback-follow-image {
+	margin-left: 5px;
+	width: 20px;
+	height: 20px;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.my-playback-track-container {
+	display: flex;
+	height: 50%;
+	border-radius: 8px;
+	align-items: center;
+	padding: 10px;
+}
+
+.my-playback-track-text {
+	text-align: left;
+    color: black;
+    font-family: 'Work Sans', sans-serif;
+    font-weight: 600;
+	font-size: 32;
+	
+	&.sub{
+		font-weight: 400;
+	}
 
 	&:hover {
-		background-color: lightgreen;
+		color: lightgreen;
 	}
 }
-
-.playback-info {
-	display: flex;
-	align-items: center;
-	flex-direction: column;
-	justify-content: space-between;
-}
-
-.playback-track-info {
-	display: flex;
-	justify-content: space-around;
-}
-
-.playback-user-text {
-    color: black;
-    font-family: 'Work Sans', sans-serif;
-    font-weight: medium;
-    font-size: 18;
-}
-
-.playback-track-text {
-    color: black;
-    font-family: 'Work Sans', sans-serif;
-    font-weight: bold;
-    font-size: 24;
-}
-
-.playback-artist-text {
-    color: black;
-    font-family: 'Work Sans', sans-serif;
-    font-weight: medium;
-    font-size: 14;
-}
-
-.playback-album-text {
-	margin-left: 10;
-    color: black;
-    font-family: 'Work Sans', sans-serif;
-    font-size: 14;
-}
-
-

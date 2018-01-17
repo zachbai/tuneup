@@ -20,18 +20,20 @@ Router.post('/auth', async (req, res) => {
 			const payload = {
 				spotifyId: spotifyId
 			};
+			const expiry = 60 * 60 * 24;
 			const tokenOptions = {
-				expiresIn: '1440m' // expires in 24 hours
+				expiresIn: expiry // expires in 24 hours
 			};
 
 			const token = jwt.sign(payload, config.appSecret, tokenOptions);
 			res.clearCookie(config.spotifyIdCookieKey);
 			res.json({
 				success: true,
-				tuneup_token: token
+				tuneup_token: token,
+				expiry: Date.now() + (expiry - 1) * 1000 
 			});
 		} else 
-			throw 'User doesdb not exist';
+			throw 'User does not exist';
 	} catch(err) {
 		res.json({
 			success: false,

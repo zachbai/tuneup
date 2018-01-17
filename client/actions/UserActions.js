@@ -99,6 +99,13 @@ export const removeFollower = followerId => {
 	};
 };
 
+export const setFollowers = followers => {
+	return {
+		type: TuneupActionTypes.SET_FOLLOWERS,
+		followers
+	};
+};
+
 export const requestAddFollowing = followingId => {
 	return {
 		type: TuneupActionTypes.REQUEST_ADD_FOLLOWING,
@@ -189,6 +196,13 @@ export const removeFollowing = followingId => {
 				console.error(err);
 				return dispatch(apiError(TuneupActionTypes.REMOVE_FOLLOWING));
 			});
+	};
+};
+
+export const setFollowing = following => {
+	return {
+		type: TuneupActionTypes.SET_FOLLOWING,
+		following
 	};
 };
 

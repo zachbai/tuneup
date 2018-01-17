@@ -50,12 +50,24 @@ class Tuneup {
 		return User.getUser(spotifyId);
 	}
 
-	getFollowers(spotifyId) {
-		return User.getFollowersForUser(spotifyId);
+	async getFollowers(spotifyId) {
+		const followersIds = await User.getFollowersForUser(spotifyId);
+		return Promise.all(followersIds.map(followerId => {
+			return Promise.all([this.getCurrentPlayback(followerId),this.getUser(followerId)]).then(results => {
+				results[1].currentPlayback = results[0];
+				return results[1];
+			});
+		}));
 	}
 
-	getFollowing(spotifyId) {
-		return User.getFollowingForUser(spotifyId);
+	async getFollowing(spotifyId) {
+		const followingIds = await User.getFollowingForUser(spotifyId);
+		return Promise.all(followingIds.map(followingId => {
+			return Promise.all([this.getCurrentPlayback(followingId),this.getUser(followingId)]).then(results => {
+				results[1].currentPlayback = results[0];
+				return results[1];
+			});
+		}));
 	}
 
 	async getTrack(spotifyId, trackId) {

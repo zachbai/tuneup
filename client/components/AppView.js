@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import Landing from '../containers/Landing';
 import HeaderView from './HeaderView';
 import FeedView from './FeedView';
-import Playback from '../containers/Playback';
+import MyPlayback from '../containers/MyPlayback';
 
 const App = (props) => {
 	if (!props.loggedIn)
@@ -13,7 +13,7 @@ const App = (props) => {
 	return ( //app
 		<div className={classNames('app-container')}>
 			<HeaderView />
-			<Playback />
+			<MyPlayback />
 			<FeedView />
 		</div>
 	);

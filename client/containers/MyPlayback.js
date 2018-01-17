@@ -1,10 +1,13 @@
 import { connect } from 'react-redux';
-import PlaybackView from '../components/PlaybackView';
+import MyPlaybackView from '../components/MyPlaybackView';
 
 const mapStateToProps = (state, ownProps) => {
 	return {
 		username: state.userState.username,
 		userImageUrl: state.userState.imageUrl,
+		followers: state.userState.followers,
+		following: state.userState.following,
+		isPlaying: state.userState.currentPlayback.isPlaying,
 		device: state.userState.currentPlayback.device,
 		context: state.userState.currentPlayback.context,
 		track: state.userState.currentPlayback.track,
@@ -17,9 +20,9 @@ const mapDispatchToProps = (state, ownProps) => {
 	return {};
 };
 
-const Playback = connect(
+const MyPlayback = connect(
 	mapStateToProps,
 	mapDispatchToProps
-)(PlaybackView);
+)(MyPlaybackView);
 
-export default Playback;
+export default MyPlayback;
