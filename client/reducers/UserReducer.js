@@ -95,21 +95,28 @@ const UserReducer = (state = initialState, action) => {
 		});
 		return state;
 
-	case TuneupActionTypes.UPDATE_CURRENT_PLAYBACK:
+	case TuneupActionTypes.UPDATE_CURRENT_PLAYBACK: {
 		if (action.userId == shared.getSpotifyId()) {
 			return Object.assign({}, state, {
 				currentPlayback: action.currentPlayback
 			});
 		}
-		state.following.map(f => {
+		const newFollowing = state.following.slice(0)
+		newFollowing.map(f => {
 			if (f.spotifyId == action.userId)
-				f.currentTrack = action.currentPlayback;
+				f.currentPlayback = action.currentPlayback;
 		});
-		state.followers.map(f => {
+
+		const newFollowers = state.followers.slice(0).map(f => {
 			if (f.spotifyId == action.userId)
-				f.currentTrack = action.currentPlayback;
+				f.currentPlayback = action.currentPlayback;
 		});
-		return state;
+
+		return Object.assign({}, state, {
+			'following': newFollowing,
+			'followers': newFollowers
+		});
+	}
 	default:
 		return state;
 	}

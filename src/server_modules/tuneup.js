@@ -33,6 +33,8 @@ class Tuneup {
 			const accessToken = await this.getValidAccessToken(spotifyId);
 			const currentPlayback = await spotify.getCurrentPlayback(accessToken);
 			const oldCurrentPlayback = await UserPlayback.getUserPlayback(spotifyId);
+			if (!currentPlayback)
+				return;
 			if (currentPlayback.track.id != oldCurrentPlayback.track.id) {
 				if (this.socket) {
 					this.socket.emit('current-updated', {

@@ -12,9 +12,13 @@ const MyPlaybackView = (props) => {
 						{props.username}
 					</div>
 					<div className={classNames('my-playback-listening-status-text')}>
-						currently listening
+						{props.isPlaying ? 'currently listening' : null}
 					</div>
-					<i className={classNames('fa fa-volume-up','my-playback-listening-icon')} aria-hidden="true"></i>
+					{
+						props.isPlaying 
+							? <i className={classNames('fa fa-volume-up','my-playback-listening-icon')} aria-hidden="true"></i>
+							: null
+					}
 					<div className={classNames('my-playback-follow-container')}>
 						<div className={classNames('my-playback-followers-container')}>
 							<div className={classNames('my-playback-follow-text')}>
@@ -57,11 +61,11 @@ const MyPlaybackView = (props) => {
 						<div className={classNames('my-playback-track-text')}>
 							{props.track.name + ' '}
 							<span className={classNames('my-playback-track-text', 'sub')}>
-							by
+								{props.isPlaying ? 'by' : null}
 							</span>
 							{' ' + props.artists[0] + ' '}
 							<span className={classNames('my-playback-track-text', 'sub')}>
-							from
+								{props.isPlaying ? 'from' : null}
 							</span>
 							{' ' + props.album.name}
 						</div>

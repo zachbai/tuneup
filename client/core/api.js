@@ -11,7 +11,8 @@ const api = {
 		}).catch(err => console.error(err));
 
 		this.getCurrentPlayback().then(currentPlayback => {
-			store.dispatch(updateCurrentPlayback(currentPlayback, shared.getSpotifyId()));
+			if (currentPlayback)
+				store.dispatch(updateCurrentPlayback(currentPlayback, shared.getSpotifyId()));
 		}).catch(err => console.error(err));
 
 		this.getFollowers().then(followers => {
