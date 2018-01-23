@@ -117,6 +117,17 @@ const UserReducer = (state = initialState, action) => {
 			'followers': newFollowers
 		});
 	}
+
+	case TuneupActionTypes.UPDATE_CURRENT_PLAYBACK_PLAY_STATE: {
+		const newCurrentPlayback = Object.assign({}, state.currentPlayback, {
+			isPlaying: action.isPlaying
+		});
+
+		return Object.assign({}, state, {
+			currentPlayback: newCurrentPlayback
+		});
+	}
+
 	default:
 		return state;
 	}

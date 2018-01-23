@@ -21,7 +21,7 @@ class Tuneup {
 		try {
 			const newUser = await spotify.newUser(code, facebookId);
 			await User.addUser(newUser);
-			// this.pollUser(newUser.spotifyId);
+			this.pollUser(newUser.spotifyId);
 			return newUser.spotifyId;
 		} catch(err) {
 			throw 'Could not add user';
@@ -35,7 +35,7 @@ class Tuneup {
 			const oldCurrentPlayback = await UserPlayback.getUserPlayback(spotifyId);
 			if (!currentPlayback)
 				return;
-			if (currentPlayback.track.id != oldCurrentPlayback.track.id) {
+			if (currentPlayback.track.id !== oldCurrentPlayback.track.id) {
 				if (this.socket) {
 					this.socket.emit('current-updated', {
 						userId: spotifyId,

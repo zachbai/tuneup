@@ -43,7 +43,7 @@ class UserPlayback {
 			return {
 				timestamp: result[0],
 				progress: result[1],
-				isPlaying: result[2]
+				isPlaying: result[2] == 'true'
 			};
 		});
 	}

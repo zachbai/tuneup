@@ -1,6 +1,20 @@
 import React from 'react';
 import classNames from 'classnames';
 
+const renderTrack = (props) => {
+	return ( [
+		props.track.name + ' ',
+		<span key='by' className={classNames('my-playback-track-text', 'sub')}>
+			{ 'by' }
+		</span>,
+		' ' + props.artists[0] + ' ',
+		<span key='from' className={classNames('my-playback-track-text', 'sub')}>
+			{'from'}
+		</span>,
+		' ' + props.album.name,
+	]);
+};
+
 const CellView = (props) => {
 	return (
 		<div className={classNames('my-playback-container')}>
@@ -59,15 +73,11 @@ const CellView = (props) => {
 				<div className={classNames('my-playback-track-container')}>
 					<a href={props.track.url} target='_blank'>
 						<div className={classNames('my-playback-track-text')}>
-							{props.track.name + ' '}
-							<span className={classNames('my-playback-track-text', 'sub')}>
-								{props.isPlaying ? 'by' : null}
-							</span>
-							{' ' + props.artists[0] + ' '}
-							<span className={classNames('my-playback-track-text', 'sub')}>
-								{props.isPlaying ? 'from' : null}
-							</span>
-							{' ' + props.album.name}
+							{
+								props.track 
+									? renderTrack(props)
+									: 'No track currently playing'
+							}
 						</div>
 					</a>
 				</div>

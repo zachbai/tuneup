@@ -1,6 +1,20 @@
 import React from 'react';
 import classNames from 'classnames';
 
+const renderTrack = (props) => {
+	return ( [
+		props.track.name + ' ',
+		<span key='by' className={classNames('my-playback-track-text', 'sub')}>
+			{ 'by' }
+		</span>,
+		' ' + props.artists[0] + ' ',
+		<span key='from' className={classNames('my-playback-track-text', 'sub')}>
+			{'from'}
+		</span>,
+		' ' + props.album.name,
+	]);
+};
+
 const MyPlaybackView = (props) => {
 	return (
 		<div className={classNames('my-playback-container')}>
@@ -12,7 +26,7 @@ const MyPlaybackView = (props) => {
 						{props.username}
 					</div>
 					<div className={classNames('my-playback-listening-status-text')}>
-						{props.isPlaying ? 'currently listening' : null}
+						{props.isPlaying ? 'currently listening' : 'last listened'}
 					</div>
 					{
 						props.isPlaying 
@@ -29,7 +43,7 @@ const MyPlaybackView = (props) => {
 									{props.followers.length}
 								</div>
 								{
-									props.followers.slice(props.followers.length < 3 ? props.followers.length-1 : 2).map(follower => {
+									props.followers.slice(0, 3).map(follower => {
 										return (
 											<img className={classNames('my-playback-follow-image')} src={follower.imageUrl}/>
 										);
@@ -46,7 +60,7 @@ const MyPlaybackView = (props) => {
 									{props.following.length}
 								</div>
 								{
-									props.following.slice(props.following.length < 3 ? props.following.length-1 : 2).map(following => {
+									props.following.slice(0, 3).map(following => {
 										return (
 											<img className={classNames('my-playback-follow-image')} src={following.imageUrl}/>
 										);
@@ -59,15 +73,11 @@ const MyPlaybackView = (props) => {
 				<div className={classNames('my-playback-track-container')}>
 					<a href={props.track.url} target='_blank'>
 						<div className={classNames('my-playback-track-text')}>
-							{props.track.name + ' '}
-							<span className={classNames('my-playback-track-text', 'sub')}>
-								{props.isPlaying ? 'by' : null}
-							</span>
-							{' ' + props.artists[0] + ' '}
-							<span className={classNames('my-playback-track-text', 'sub')}>
-								{props.isPlaying ? 'from' : null}
-							</span>
-							{' ' + props.album.name}
+							{
+								props.track
+									? renderTrack(props)
+									: 'No track currently playing'
+							}
 						</div>
 					</a>
 				</div>

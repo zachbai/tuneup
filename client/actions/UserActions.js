@@ -214,6 +214,14 @@ export const updateCurrentPlayback = (currentPlayback, userId) => {
 	};
 };
 
+export const updateCurrentPlaybackPlayState = (isPlaying, userId) => {
+	return {
+		type: TuneupActionTypes.UPDATE_CURRENT_PLAYBACK_PLAY_STATE,
+		isPlaying,
+		userId
+	};
+};
+
 export const updateRecents = (tracksInfo, userId) => {
 	return {
 		type: TuneupActionTypes.UPDATE_RECENTS,

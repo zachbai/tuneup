@@ -8,6 +8,7 @@ const api = {
 		await this.getValidAuthToken();
 		this.getMe().then(userInfo => {
 			store.dispatch(setUserInfo(userInfo));
+			shared.cookies.set(constants.SPOTIFY_COOKIES_KEY, userInfo.spotifyId);
 		}).catch(err => console.error(err));
 
 		this.getCurrentPlayback().then(currentPlayback => {
@@ -66,12 +67,8 @@ const api = {
 			}
 		};
 		return fetch('/api/me', options).then(res => res.json())
-			.then((res) => {
-				return {
-					username: res.payload.username,
-					imageUrl: res.payload.imageUrl
-				};
-			}).catch(err => console.error(err));
+			.then((res) => res.payload)
+			.catch(err => console.error(err));
 	},
 
 	async getCurrentPlayback() {
