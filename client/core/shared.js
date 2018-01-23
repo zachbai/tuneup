@@ -12,7 +12,7 @@ module.exports = {
 			return null;
 	},
 	getSpotifyId: () => {
-		const spotifyId = cookies.get(constants.SPOTIFY_COOKIES_KEY);
+		const spotifyId = localStorage.getItem(constants.SPOTIFY_LOCAL_STORAGE_KEY);
 		if (spotifyId)
 			return spotifyId;
 		else 

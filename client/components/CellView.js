@@ -26,7 +26,7 @@ const CellView = (props) => {
 						{props.username}
 					</div>
 					<div className={classNames('my-playback-listening-status-text')}>
-						{props.isPlaying ? 'currently listening' : null}
+						{props.isPlaying ? 'currently listening' : 'last listened'}
 					</div>
 					{
 						props.isPlaying 
@@ -74,9 +74,9 @@ const CellView = (props) => {
 					<a href={props.track.url} target='_blank'>
 						<div className={classNames('my-playback-track-text')}>
 							{
-								props.track 
+								props.track.id
 									? renderTrack(props)
-									: 'No track currently playing'
+									: 'No track available'
 							}
 						</div>
 					</a>

@@ -101,7 +101,7 @@ const UserReducer = (state = initialState, action) => {
 				currentPlayback: action.currentPlayback
 			});
 		}
-		const newFollowing = state.following.slice(0)
+		const newFollowing = state.following.slice(0);
 		newFollowing.map(f => {
 			if (f.spotifyId == action.userId)
 				f.currentPlayback = action.currentPlayback;
@@ -134,4 +134,3 @@ const UserReducer = (state = initialState, action) => {
 };
 
 export default UserReducer;
-

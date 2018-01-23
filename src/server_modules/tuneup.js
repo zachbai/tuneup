@@ -31,7 +31,7 @@ class Tuneup {
 	pollUser(spotifyId) {
 		setInterval(async () => {
 			const accessToken = await this.getValidAccessToken(spotifyId);
-			const currentPlayback = await spotify.getCurrentPlayback(accessToken);
+			const currentPlayback = await spotify.getCurrentPlayback(accessToken, spotifyId);
 			const oldCurrentPlayback = await UserPlayback.getUserPlayback(spotifyId);
 			if (!currentPlayback)
 				return;
@@ -94,8 +94,7 @@ class Tuneup {
 	}
 
 	async getCurrentPlayback(spotifyId) {
-		const accessToken = await this.getValidAccessToken(spotifyId);
-		return spotify.getCurrentPlayback(accessToken);
+		return UserPlayback.getUserPlayback(spotifyId);
 	}
 
 	async getValidAccessToken(spotifyId) {
@@ -104,8 +103,8 @@ class Tuneup {
 			const refreshToken = await User.getSpotifyRefreshTokenForUser(spotifyId);
 			const newAccessToken = await spotify.getNewAccessToken(refreshToken);	
 			await Promise.all([
-				User.setSpotifyAccessTokenForUser(newAccessToken.accessToken),
-				User.setSpotifyAccessTokenExpiryForUser(newAccessToken.expiry)
+				User.setSpotifyAccessTokenForUser(spotifyId, newAccessToken.accessToken),
+				User.setSpotifyAccessTokenExpiryForUser(spotifyId, newAccessToken.expiry)
 			]);
 			return newAccessToken.accessToken;
 		}

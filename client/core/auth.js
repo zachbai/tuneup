@@ -4,6 +4,8 @@ import shared from './shared.js';
 module.exports = {
 	getToken: () => {
 		let spotifyId = shared.cookies.get(constants.SPOTIFY_COOKIES_KEY);
+		shared.cookies.remove(constants.SPOTIFY_COOKIES_KEY);
+		localStorage.setItem(constants.SPOTIFY_LOCAL_STORAGE_KEY, spotifyId);
 		let tokenOptions = {
 			method: 'POST',
 			headers: {

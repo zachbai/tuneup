@@ -43,7 +43,12 @@ class Spotify {
 				refreshToken: res.refresh_token,
 				expiry: Date.now() + (res.expires_in - 60) * 1000
 			};
-		}).catch(err => console.log(err));
+		}).catch(err => {
+			if (err.message === 'invalid id') {
+				return null;
+			}
+			console.log(err);
+		});
 
 		return tokens;
 	}
@@ -89,7 +94,7 @@ class Spotify {
 		return profile;
 	}
 
-	async getCurrentPlayback(access_token) {
+	async getCurrentPlayback(access_token, spotifyId) {
 		let options = {
 			url: 'https://api.spotify.com/v1/me/player',
 			headers: {
@@ -140,7 +145,11 @@ class Spotify {
 			}
 			else 
 				return null;
-		}).catch(err => console.log(err));
+		}).catch(err => {
+			console.log(access_token);
+			console.log(spotifyId);
+			console.log(err);
+		});
 		return currentPlayback;
 	}
 

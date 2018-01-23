@@ -29,7 +29,7 @@ const api = {
 		if (Date.now() < localStorage.getItem(constants.TUNEUP_TOKEN_EXPIRY_LOCAL_STORAGE_KEY))
 			return localStorage.getItem(constants.TUNEUP_TOKEN_LOCAL_STORAGE_KEY);
 
-		let spotifyId = shared.cookies.get(constants.SPOTIFY_COOKIES_KEY);
+		let spotifyId = shared.getSpotifyId();
 		let tokenOptions = {
 			method: 'POST',
 			headers: {
