@@ -17,9 +17,9 @@ class Tuneup {
 		return User.hasUser(spotifyId);
 	}
 
-	async addUser(code, facebookId) {
+	async addUser(code) {
 		try {
-			const newUser = await spotify.newUser(code, facebookId);
+			const newUser = await spotify.newUser(code);
 			await User.addUser(newUser);
 			this.pollUser(newUser.spotifyId);
 			return newUser.spotifyId;

@@ -30,15 +30,13 @@ Router.get('/spotify-callback', async (req, res) => {
 	const code = req.query.code || null;	
 	const state = req.query.state || null;
 	const storedState = req.cookies ? req.cookies[stateKey] : null;
-	const storedFacebookId = req.cookies ? req.cookies[config.facebookIdCookieKey] : null;
 
 	if (!state || state != storedState) {
 		res.redirect('/auth_error');
 	} else {
 		res.clearCookie(stateKey);
-		res.clearCookie(config.facebookIdCookieKey);
 		try {
-			const spotifyId = await tuneup.addUser(code, storedFacebookId);
+			const spotifyId = await tuneup.addUser(code);
 			if (!spotifyId)
 				throw 'User could not be added';
 			res.cookie(config.spotifyIdCookieKey, spotifyId);

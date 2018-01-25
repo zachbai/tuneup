@@ -3,7 +3,7 @@ import querystring from 'querystring';
 import config from '../config.js';
 
 class Spotify {
-	async newUser(code, facebookId) {
+	async newUser(code) {
 		const tokens = await this.getTokens(code);	
 		const userInfo = await this.getUserProfile(tokens.accessToken);
 
@@ -13,7 +13,6 @@ class Spotify {
 			spotifyRefreshToken: tokens.refreshToken,
 			spotifyAccessTokenExpiry: tokens.expiry,
 			spotifyId: userInfo.spotifyId,
-			facebookId: facebookId,
 			imageUrl: userInfo.imageUrl,
 			timestamp: Date.now(),
 			followers: [],
