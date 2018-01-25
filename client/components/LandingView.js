@@ -7,10 +7,10 @@ import SpotifyLoginButton from './SpotifyLoginButton';
 class LandingView extends Component {
 	render() {
 		return (
-			<div className={classNames('app-container')}>
-				<div className={classNames('header-text', 'title')}>tuneup</div>
-				<div className={classNames('header-text', 'sub')}>created by zb</div>
-				<FacebookLoginButton onLogIn={this.props.onLoginFacebook}/>
+			<div className={classNames('landing-container')}>
+				<div className={classNames('landing-header-text', 'title')}>tuneup</div>
+				{/* <div className={classNames('header-text', 'sub')}>created by zb</div> */}
+				{/* <FacebookLoginButton onLogIn={this.props.onLoginFacebook}/> */}
 				<SpotifyLoginButton onClick={this.props.onClickSpotify}/>
 			</div>
 		);

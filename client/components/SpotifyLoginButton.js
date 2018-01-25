@@ -4,7 +4,7 @@ import classNames from 'classnames';
 const SpotifyLoginButton = (props) => {
 	return (
 		<div 
-			className={classNames('button', 'spotify')}
+			className={classNames('spotify-login-button')}
 			onClick={props.onClick}
 		>
             Log in with Spotify

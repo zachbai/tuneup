@@ -12,6 +12,7 @@ Router.post('/auth', async (req, res) => {
 			success: false,
 			message: 'No spotify user ID supplied'
 		});
+		return;
 	}
 
 	try {

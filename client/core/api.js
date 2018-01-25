@@ -1,11 +1,13 @@
 import shared from './shared';
 import constants from './constants';
 import store from '../store';
+import socket from './socket';
 import { setUserInfo, updateCurrentPlayback, setFollowers, setFollowing } from '../actions/UserActions';
 
 const api = {
 	async initializeState() {
 		await this.getValidAuthToken();
+		socket.listen();
 		this.getMe().then(userInfo => {
 			store.dispatch(setUserInfo(userInfo));
 			shared.cookies.set(constants.SPOTIFY_COOKIES_KEY, userInfo.spotifyId);

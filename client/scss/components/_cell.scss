@@ -13,9 +13,10 @@
 	display: flex;
 	align-items: center;
 	padding: 10px;
-	background-color: $TUNEUP_COLORS_LIGHT_GREY;
+	background-color: $TUNEUP_COLORS_BLACK_TRANSPARENT;
 	height: 15%;
 	border-radius: 15px;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .cell-user-image {
@@ -26,7 +27,7 @@
 
 .cell-user-text {
 	margin-left: 10px;
-    color: $TUNEUP_COLORS_BLACK;
+    color: $TUNEUP_COLORS_LIGHT_GREY;
     font-family: 'Work Sans', sans-serif;
     font-weight: 600;
 	font-size: 14px;
@@ -36,7 +37,7 @@
 	margin-left: 10px;
     font-family: 'Work Sans', sans-serif;
 	font-weight: 400;
-	color: $TUNEUP_COLORS_GREY;
+	color: $TUNEUP_COLORS_LIGHT_GREY;
 	font-size: 12px;
 }
 
