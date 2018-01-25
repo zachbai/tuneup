@@ -2,17 +2,28 @@ import React from 'react';
 import classNames from 'classnames';
 
 const renderTrack = (props) => {
-	return ( [
-		props.track.name + ' ',
-		<span key='by' className={classNames('cell-track-text', 'sub')}>
-			{ 'by' }
-		</span>,
-		' ' + props.artists[0] + ' ',
-		<span key='from' className={classNames('cell-track-text', 'sub')}>
-			{'from'}
-		</span>,
-		' ' + props.album.name,
-	]);
+	if (!props.track.id)
+		return null;
+
+	return (
+		<a className={classNames('cell-track-info-container')} href={props.track.url} target='_blank'>
+			<div className={classNames('cell-track-text')}>
+				{props.track.name + ' '}
+			</div>
+			<div className={classNames('cell-track-text')}>
+				<span key='by' className={classNames('cell-track-text', 'sub')}>
+					{ 'by' }
+				</span>
+				{' ' + props.artists[0] + ' '}
+			</div>
+			<div className={classNames('cell-track-text')}>
+				<span key='from' className={classNames('cell-track-text', 'sub')}>
+					{'from'}
+				</span>
+				{' ' + props.album.name}
+			</div>
+		</a>
+	);
 };
 
 const CellView = (props) => {
@@ -31,16 +42,15 @@ const CellView = (props) => {
 					{props.isPlaying ? 'currently listening' : 'last listened'}
 				</div>
 			</div>
-			<div className={classNames('cell-footer')}>
-				<a href={props.track.url} target='_blank'>
-					<div className={classNames('cell-track-text')}>
-						{
-							props.track.id
-								? renderTrack(props)
-								: 'No track available'
-						}
+			{
+				props.track.id 
+					? null
+					: <div className={classNames('cell-no-track-text')}>
+						No track available
 					</div>
-				</a>
+			}
+			<div className={classNames('cell-footer')}>
+				{renderTrack(props)}
 			</div>
 		</div>
 	);

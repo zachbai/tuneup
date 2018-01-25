@@ -2,7 +2,7 @@
 	display: flex;
 	border-radius: 15px;
 	flex-direction: column;
-	background-color: white;
+	background-color: $TUNEUP_COLORS_LIGHT_GREY;
 	padding: 10px;
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 	background-size: cover;
@@ -43,36 +43,37 @@
 
 .cell-footer {
 	display: flex;
-	// background-color: $TUNEUP_COLORS_BLACK_TRANSPARENT;
-	height: 40px;
-	align-items: center;
+	flex-direction: column;
+	align-items: flex-start;
 	padding: 10px;
-	border-radius: 15px;
+}
+
+.cell-track-info-container {
+	color: $TUNEUP_COLORS_LIGHT_GREY;
+	&:hover {
+		color: lightgreen;
+	}
 }
 
 .cell-track-text {
+	color: inherit;
 	text-align: left;
-	color: $TUNEUP_COLORS_LIGHT_GREY;
 	text-shadow: 0px 4px 7px rgba(0,0,0,0.4),
 	0px -4px 6px rgba(0,0,0,0.4),
 	0px 18px 23px rgba(0,0,0,0.1);
     font-family: 'Work Sans', sans-serif;
     font-weight: 600;
 	font-size: 18px;
+	text-overflow: ellipsis;
 
 	&.sub {
 		font-weight: 400;
-		color: inherit;
-	}
-
-	&:hover {
-		color: lightgreen;
 	}
 }
 
 .cell-no-track-text {
 	color: $TUNEUP_COLORS_BLACK;
     font-family: 'Work Sans', sans-serif;
-    font-weight: 400;
+    font-weight: 500;
 	font-size: 24px;
 }
