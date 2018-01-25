@@ -1,0 +1,8 @@
+.feed-container {
+	display: grid;
+	width: 100%;
+	height: 100%;
+	grid-template-columns: repeat(3, 1fr);
+	grid-auto-rows: calc((75vw - (2 * 10px)) / 3);
+	grid-gap: 10px 10px;
+}

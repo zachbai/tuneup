@@ -5,7 +5,9 @@ import Cell from '../containers/Cell.js';
 
 class FeedView extends Component {
 	render() {
-		return this.props.following.map(f => <Cell user={f}/>);
+		return <div className={classNames('feed-container')}>
+			{ this.props.following.map(f => <Cell user={f}/>) }
+		</div>;
 	}
 }
 
