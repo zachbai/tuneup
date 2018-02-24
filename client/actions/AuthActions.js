@@ -39,3 +39,10 @@ const userRegistered = () => {
 		type: TuneupActionTypes.USER_REGISTERED 
 	};
 };
+
+export const logOut = () => {
+	auth.logOut();
+	return {
+		type: TuneupActionTypes.USER_LOG_OUT
+	};
+};

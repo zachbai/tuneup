@@ -10,7 +10,6 @@ const api = {
 		socket.listen();
 		this.getMe().then(userInfo => {
 			store.dispatch(setUserInfo(userInfo));
-			shared.cookies.set(constants.SPOTIFY_COOKIES_KEY, userInfo.spotifyId);
 		}).catch(err => console.error(err));
 
 		this.getCurrentPlayback().then(currentPlayback => {

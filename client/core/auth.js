@@ -32,5 +32,8 @@ module.exports = {
 				reject(err);
 			});
 		});
+	},
+	logOut: () => {
+		localStorage.clear();
 	}
 };

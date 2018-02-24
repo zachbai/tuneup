@@ -13,6 +13,7 @@ const mapStateToProps = (state, ownProps) => {
 		track: ownProps.user.currentPlayback ? ownProps.user.currentPlayback.track : '',
 		artists: ownProps.user.currentPlayback ? ownProps.user.currentPlayback.artists : [],
 		album: ownProps.user.currentPlayback ? ownProps.user.currentPlayback.album : '',
+		timestamp: ownProps.user.currentPlayback ? ownProps.user.currentPlayback.timestamp : null
 	};
 };
 

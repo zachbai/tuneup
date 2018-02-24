@@ -1,6 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import utils from '../core/utils';
+
 const renderTrack = (props) => {
 	if (!props.track.id)
 		return null;
@@ -39,7 +41,11 @@ const CellView = (props) => {
 					{props.user.username}
 				</div>
 				<div className={classNames('cell-listening-status-text')}>
-					{props.isPlaying ? 'currently listening' : 'last listened'}
+					{
+						props.isPlaying ? 'currently listening' 
+							: ( props.track.id ? 'last listened ' + utils.toTimeString(props.timestamp) + ' ago' 
+								: null)
+					}
 				</div>
 			</div>
 			{

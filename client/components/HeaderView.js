@@ -1,5 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
+import LogOutButton from '../containers/LogOutButton';
 
 const HeaderView = (props) => {
 	return (
@@ -7,6 +8,7 @@ const HeaderView = (props) => {
 			<div className={classNames('header-text')}>
                 tuneup
 			</div>
+			<LogOutButton />
 		</div>
 	);
 };
